@@ -342,6 +342,29 @@
                 font-size: 1.5rem;
             }
         }
+        
+        .welcome-modal-content {
+            background: white;
+            border-radius: 20px;
+            padding: 25px;
+            max-width: 100%;
+            width: 400px;
+            max-height: 90vh;
+            overflow-y: auto;
+            position: relative;
+        }
+        
+        .welcome-text {
+            margin-bottom: 20px;
+            line-height: 1.6;
+        }
+        
+        .welcome-title {
+            font-size: 1.5rem;
+            text-align: center;
+            margin-bottom: 15px;
+            color: #1b5e20;
+        }
     </style>
 </head>
 <body>
@@ -352,7 +375,7 @@
         </header>
         
         <div class="balance-container">
-            <div id="balanceText">💰 Баланс: <span id="balance">1,000,000</span> монет</div>
+            <div id="balanceText">💰 Баланс: <span id="balance">20</span> монет</div>
         </div>
         
         <div class="section">
@@ -368,7 +391,7 @@
         </div>
         
         <div class="section">
-            <h2 class="section-title">Мои грядки</h2>
+            <h2 class="section-title" id="bedsTitle">Мои грядки</h2>
             <div class="beds-container" id="bedsContainer">
                 <!-- Грядки будут заполнены через JS -->
             </div>
@@ -433,6 +456,46 @@
             </div>
         </div>
     </div>
+    
+    <!-- Приветственное модальное окно -->
+    <div id="welcomeModal" class="modal" style="display: none;">
+        <div class="welcome-modal-content">
+            <h2 class="welcome-title" id="welcomeTitle">Добро пожаловать в GaGBot!</h2>
+            <div class="welcome-text" id="welcomeTextRu">
+                <p>🌱 Добро пожаловать в GaGBot - игру-ферму в Telegram!</p>
+                <p>🎮 В этой игре вы можете:</p>
+                <ul>
+                    <li>Покупать семена в магазине</li>
+                    <li>Сажать растения на грядках</li>
+                    <li>Собирать урожай</li>
+                    <li>Продавать растения за монеты</li>
+                    <li>Расширять свою ферму</li>
+                </ul>
+                <p>💡 Начните с покупки семян в магазине и посадите их на грядках. После сбора урожая продавайте растения, чтобы получить больше монет!</p>
+                <p>⚙️ Вы можете переключить язык в любое время в нижней части экрана.</p>
+                <p>Удачи в развитии вашей фермы! 🌾</p>
+            </div>
+            <div class="welcome-text" id="welcomeTextEn" style="display: none;">
+                <p>🌱 Welcome to GaGBot - a Telegram farming game!</p>
+                <p>🎮 In this game you can:</p>
+                <ul>
+                    <li>Buy seeds in the shop</li>
+                    <li>Plant seeds in garden beds</li>
+                    <li>Harvest crops</li>
+                    <li>Sell plants for coins</li>
+                    <li>Expand your farm</li>
+                </ul>
+                <p>💡 Start by buying seeds in the shop and planting them. After harvesting, sell your plants to earn more coins!</p>
+                <p>⚙️ You can switch language anytime at the bottom of the screen.</p>
+                <p>Good luck with your farming adventure! 🌾</p>
+            </div>
+            <div style="display: flex; gap: 10px; margin-top: 20px;">
+                <button class="lang-btn" onclick="setWelcomeLang('ru')">🇷🇺 Русский</button>
+                <button class="lang-btn" onclick="setWelcomeLang('en')">🇬🇧 English</button>
+            </div>
+            <button class="btn" onclick="closeModal('welcomeModal')" style="margin-top: 20px; width: 100%;">Начать игру</button>
+        </div>
+    </div>
 
     <script>
         // Инициализация Telegram Web App
@@ -488,7 +551,8 @@
                 refreshIn: "Обновление через:",
                 title: "🌱 GaGBot - Садовая ферма",
                 subtitle: "Выращивайте растения и собирайте урожай!",
-                noPlantsToSell: "Нет растений для продажи"
+                noPlantsToSell: "Нет растений для продажи",
+                seed: "Семя"
             },
             en: {
                 balance: "💰 Balance: ",
@@ -536,7 +600,8 @@
                 refreshIn: "Refresh in:",
                 title: "🌱 GaGBot - Garden Farm",
                 subtitle: "Grow plants and harvest!",
-                noPlantsToSell: "No plants to sell"
+                noPlantsToSell: "No plants to sell",
+                seed: "Seed"
             }
         };
         
@@ -621,7 +686,7 @@
         // Класс фермы (игрового состояния)
         class Farm {
             constructor() {
-                this.balance = 1000000;
+                this.balance = 20; // Начальный баланс изменен на 20
                 this.slots = 30;
                 this.plants = Array(this.slots).fill(null);
                 
@@ -690,6 +755,7 @@
                         
                         this.showNotification(`${translations[currentLang].bought} ${quantity} ${plant.name} за ${totalCost} ${translations[currentLang].coins}`);
                         this.saveGame();
+                        updateUI(); // Обновляем UI сразу
                         return true;
                     } else {
                         this.showNotification(translations[currentLang].notEnoughMoney);
@@ -710,6 +776,7 @@
                         this.inventory.splice(inventoryIndex, 1);
                         this.showNotification(`${translations[currentLang].sold} ${plant.name} ${translations[currentLang].sellFor} ${price} 💰`);
                         this.saveGame();
+                        updateUI(); // Обновляем UI сразу
                         return true;
                     }
                 }
@@ -734,6 +801,7 @@
                     this.balance += total;
                     this.showNotification(`${translations[currentLang].sold} ${soldCount} ${translations[currentLang].sellFor} ${total} ${translations[currentLang].coins}`);
                     this.saveGame();
+                    updateUI(); // Обновляем UI сразу
                     return true;
                 } else {
                     this.showNotification(translations[currentLang].noPlantsToSell);
@@ -765,6 +833,7 @@
                     plant.startGrowth();
                     this.showNotification(`${translations[currentLang].planted} ${plant.name}`);
                     this.saveGame();
+                    updateUI(); // Обновляем UI сразу
                     return true;
                 } else {
                     this.showNotification(translations[currentLang].slotOccupied);
@@ -798,6 +867,7 @@
                 }
                 
                 this.saveGame();
+                updateUI(); // Обновляем UI сразу
                 return collected;
             }
             
@@ -818,7 +888,7 @@
                 const savedData = localStorage.getItem('farmGame');
                 if (savedData) {
                     const gameData = JSON.parse(savedData);
-                    this.balance = gameData.balance || 1000000;
+                    this.balance = gameData.balance || 20;
                     
                     // Восстанавливаем время обновления магазина
                     shopRefreshTime = gameData.shopRefreshTime || 300;
@@ -912,6 +982,7 @@
         const bedsContainer = document.getElementById('bedsContainer');
         const headerTitle = document.getElementById('headerTitle');
         const headerSubtitle = document.getElementById('headerSubtitle');
+        const bedsTitle = document.getElementById('bedsTitle');
         
         // Функции для работы с интерфейсом
         function updateUI() {
@@ -922,6 +993,7 @@
             // Обновляем заголовок
             headerTitle.textContent = translations[currentLang].title;
             headerSubtitle.textContent = translations[currentLang].subtitle;
+            bedsTitle.textContent = translations[currentLang].myBeds;
             
             // Обновляем грядки
             updateBeds();
@@ -949,7 +1021,6 @@
                         
                         bed.innerHTML = `
                             <div class="bed-plant">${getPlantEmoji(plant.name)}</div>
-                            <div class="plant-name">${plant.name}</div>
                             <div class="progress-bar">
                                 <div class="progress-fill" style="width: ${plant.growthProgress}%"></div>
                             </div>
@@ -1104,8 +1175,6 @@
                         const plantIndex = parseInt(document.getElementById('plantSelect').value);
                         if (farm.plantGrowth(index, farm.inventory[plantIndex])) {
                             closeModal('plantingModal');
-                            updateUI();
-                            openInventory(); // Обновляем инвентарь
                         }
                     };
                 }
@@ -1155,11 +1224,7 @@
                 sellButton.style.width = '100%';
                 sellButton.onclick = () => {
                     const plantIndex = parseInt(document.getElementById('sellPlantSelect').value);
-                    if (farm.sellPlant(plantIndex)) {
-                        closeModal('sellingModal');
-                        updateUI();
-                        openInventory(); // Обновляем инвентарь
-                    }
+                    farm.sellPlant(plantIndex);
                 };
                 
                 // Кнопка "Продать всё"
@@ -1169,11 +1234,7 @@
                 sellAllButton.style.width = '100%';
                 sellAllButton.style.marginTop = '10px';
                 sellAllButton.onclick = () => {
-                    if (farm.sellAllPlants()) {
-                        closeModal('sellingModal');
-                        updateUI();
-                        openInventory(); // Обновляем инвентарь
-                    }
+                    farm.sellAllPlants();
                 };
                 
                 sellingContent.appendChild(sellButton);
@@ -1248,17 +1309,11 @@
         }
         
         function buySeed(plantIndex) {
-            if (farm.buySeed(plantIndex, 1)) {
-                updateUI(); // Обновляем весь интерфейс
-                openShop(); // Обновляем магазин
-                openInventory(); // Обновляем инвентарь
-            }
+            farm.buySeed(plantIndex, 1);
         }
         
         function collectAll() {
             farm.collectPlants();
-            updateUI(); // Обновляем весь интерфейс
-            openInventory(); // Обновляем инвентарь
         }
         
         function setLanguage(lang) {
@@ -1278,7 +1333,6 @@
             document.querySelector('.btn-sell').textContent = trans.sell;
             
             document.querySelectorAll('.section-title')[0].textContent = trans.mainMenu;
-            document.querySelectorAll('.section-title')[1].textContent = trans.myBeds;
             
             document.getElementById('shopModal').querySelector('.modal-title').textContent = trans.seedShop;
             document.getElementById('inventoryModal').querySelector('.modal-title').textContent = trans.yourInventory;
@@ -1313,6 +1367,20 @@
             }, 3000);
         }
         
+        function setWelcomeLang(lang) {
+            if (lang === 'ru') {
+                document.getElementById('welcomeTextRu').style.display = 'block';
+                document.getElementById('welcomeTextEn').style.display = 'none';
+                document.getElementById('welcomeTitle').textContent = 'Добро пожаловать в GaGBot!';
+                document.querySelector('#welcomeModal button:last-child').textContent = 'Начать игру';
+            } else {
+                document.getElementById('welcomeTextRu').style.display = 'none';
+                document.getElementById('welcomeTextEn').style.display = 'block';
+                document.getElementById('welcomeTitle').textContent = 'Welcome to GaGBot!';
+                document.querySelector('#welcomeModal button:last-child').textContent = 'Start Game';
+            }
+        }
+        
         // Таймер обновления магазина
         function updateShopTimer() {
             if (shopRefreshTime > 0) {
@@ -1342,8 +1410,9 @@
             
             // Проверяем, есть ли сохраненная игра
             if (!localStorage.getItem('farmGame')) {
-                // Показываем приветственное сообщение
-                showNotification("Добро пожаловать в GaGBot! Начните с покупки семян в магазине.");
+                // Показываем приветственное окно
+                document.getElementById('welcomeModal').style.display = 'flex';
+                setWelcomeLang('ru');
             }
             
             // Автосохранение каждые 10 секунд
