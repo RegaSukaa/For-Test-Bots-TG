@@ -3,1423 +3,1634 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>GaGBot - Вырасти свой сад!</title>
-    <script src="https://telegram.org/js/telegram-web-app.js"></script>
+    <title>GaGBot - Фермерская игра</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&family=Roboto+Slab:wght@400;600;700&display=swap" rel="stylesheet">
     <style>
         * {
-            box-sizing: border-box;
             margin: 0;
             padding: 0;
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            box-sizing: border-box;
+            font-family: 'Poppins', sans-serif;
         }
-        
+
+        :root {
+            --primary: #4CAF50;
+            --primary-dark: #388E3C;
+            --secondary: #FFC107;
+            --secondary-dark: #FFA000;
+            --background: #f5f9f6;
+            --surface: #FFFFFF;
+            --text-primary: #2c3e50;
+            --text-secondary: #7f8c8d;
+            --error: #e74c3c;
+            --success: #27ae60;
+            --warning: #f39c12;
+            --border-radius: 16px;
+            --shadow: 0 6px 15px rgba(0,0,0,0.08);
+            --transition: all 0.3s ease;
+        }
+
         body {
-            background: linear-gradient(135deg, #e0f7e0, #c8e6c9);
-            color: #2e7d32;
+            background: linear-gradient(135deg, #e0f7fa, #f1f8e9);
+            color: var(--text-primary);
+            padding: 16px;
+            max-width: 100%;
+            overflow-x: hidden;
             min-height: 100vh;
-            padding: 15px;
-            padding-bottom: 70px;
-        }
-        
-        .container {
-            max-width: 500px;
-            margin: 0 auto;
-        }
-        
-        header {
-            text-align: center;
-            padding: 20px 0;
-            margin-bottom: 20px;
-            background: #4caf50;
-            border-radius: 15px;
-            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
-            color: white;
-        }
-        
-        h1 {
-            font-size: 1.8rem;
-            margin-bottom: 5px;
-        }
-        
-        .balance-container {
-            background: white;
-            border-radius: 12px;
-            padding: 15px;
-            margin-bottom: 20px;
-            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
-            text-align: center;
-            font-weight: bold;
-            font-size: 1.4rem;
-            color: #388e3c;
-        }
-        
-        .section {
-            background: white;
-            border-radius: 15px;
-            padding: 20px;
-            margin-bottom: 20px;
-            box-shadow: 0 4px 10px rgba(0,0,0,0.08);
-        }
-        
-        .section-title {
-            font-size: 1.3rem;
-            margin-bottom: 15px;
-            color: #1b5e20;
-            text-align: center;
-            border-bottom: 2px solid #c8e6c9;
-            padding-bottom: 10px;
-        }
-        
-        .button-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
-            gap: 12px;
-            margin-top: 15px;
-        }
-        
-        .btn {
-            background: #4caf50;
-            color: white;
-            border: none;
-            border-radius: 10px;
-            padding: 12px 10px;
-            font-size: 1rem;
-            font-weight: bold;
-            cursor: pointer;
-            transition: all 0.2s;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-            text-align: center;
-        }
-        
-        .btn:active {
-            transform: translateY(2px);
-            box-shadow: 0 1px 2px rgba(0,0,0,0.1);
-        }
-        
-        .btn-shop {
-            background: #ff9800;
-        }
-        
-        .btn-inventory {
-            background: #9c27b0;
-        }
-        
-        .btn-sell {
-            background: #f44336;
-        }
-        
-        .btn-collect {
-            background: #2196f3;
-        }
-        
-        .btn-plant {
-            background: #673ab7;
-        }
-        
-        .plant-list {
             display: flex;
             flex-direction: column;
-            gap: 10px;
         }
-        
-        .plant-item {
-            background: #f1f8e9;
-            border-radius: 10px;
-            padding: 12px;
+
+        .container {
+            max-width: 480px;
+            margin: 0 auto;
+            width: 100%;
+        }
+
+        .header-title {
+            text-align: center;
+            padding: 20px 0;
+            margin-bottom: 10px;
+            position: relative;
+        }
+
+        .header-title h1 {
+            font-family: 'Roboto Slab', serif;
+            font-size: 2.5rem;
+            color: var(--primary-dark);
+            text-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            letter-spacing: 1px;
+        }
+
+        .header-title .subtitle {
+            font-size: 1rem;
+            color: var(--text-secondary);
+            margin-top: 5px;
+        }
+
+        .game-header {
             display: flex;
             justify-content: space-between;
             align-items: center;
-            border-left: 4px solid #4caf50;
-        }
-        
-        .plant-info {
-            flex: 1;
-        }
-        
-        .plant-name {
-            font-weight: bold;
-            font-size: 1.1rem;
-            margin-bottom: 3px;
-        }
-        
-        .plant-details {
-            font-size: 0.9rem;
-            color: #666;
-        }
-        
-        .plant-action {
-            margin-left: 10px;
-        }
-        
-        .beds-container {
-            display: grid;
-            grid-template-columns: repeat(5, 1fr);
-            gap: 10px;
-        }
-        
-        .bed-slot {
-            aspect-ratio: 1/1;
-            background: #f1f8e9;
-            border-radius: 10px;
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            align-items: center;
+            background-color: var(--surface);
+            padding: 16px 20px;
+            border-radius: var(--border-radius);
+            box-shadow: var(--shadow);
+            margin-bottom: 20px;
             position: relative;
             overflow: hidden;
-            border: 2px solid #c8e6c9;
-            font-size: 0.8rem;
-            text-align: center;
-            padding: 5px;
         }
-        
-        .bed-slot.empty {
-            background: #e8f5e9;
+
+        .game-header::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 4px;
+            background: linear-gradient(90deg, var(--primary), var(--secondary));
         }
-        
-        .bed-slot.growing {
-            background: #fff8e1;
+
+        .balance-container {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .balance {
+            font-size: 1.5rem;
+            font-weight: bold;
+            color: var(--primary);
+            font-family: 'Roboto Slab', serif;
+        }
+
+        .coins-icon {
+            color: var(--secondary);
+            font-size: 1.8rem;
+            animation: shine 2s infinite;
+        }
+
+        .action-buttons {
+            display: flex;
+            gap: 12px;
+        }
+
+        .btn {
+            padding: 12px 18px;
+            border: none;
+            border-radius: 50px;
+            font-weight: 600;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            transition: var(--transition);
+            font-size: 0.95rem;
+            box-shadow: var(--shadow);
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+            color: white;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 20px rgba(76, 175, 80, 0.3);
+        }
+
+        .btn-secondary {
+            background: linear-gradient(135deg, var(--secondary), var(--secondary-dark));
+            color: var(--text-primary);
+        }
+
+        .btn-secondary:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 20px rgba(255, 193, 7, 0.3);
+        }
+
+        .btn-neutral {
+            background-color: var(--surface);
+            color: var(--text-primary);
+            border: 1px solid #e0e0e0;
+        }
+
+        .btn-neutral:hover {
+            background-color: #f5f5f5;
+            transform: translateY(-3px);
+        }
+
+        .btn:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+            transform: none !important;
+            box-shadow: var(--shadow) !important;
+        }
+
+        .section-title {
+            font-size: 1.3rem;
+            margin-bottom: 16px;
+            color: var(--text-primary);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding-bottom: 8px;
+            border-bottom: 2px solid var(--primary);
+        }
+
+        .farm-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 15px;
+            margin-bottom: 30px;
+        }
+
+        .plot {
+            aspect-ratio: 1/1;
+            background-color: #f1f8e9;
+            border-radius: var(--border-radius);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+            overflow: hidden;
+            box-shadow: var(--shadow);
+            transition: var(--transition);
+            cursor: pointer;
+            border: 2px solid #c5e1a5;
+        }
+
+        .plot.empty {
+            background-color: #e8f5e9;
+            border: 2px dashed var(--primary);
+        }
+
+        .plot.growing {
+            background-color: #fffde7;
             border-color: #ffd54f;
         }
-        
-        .bed-slot.ready {
-            background: #e8f5e9;
-            border-color: #4caf50;
+
+        .plot.ready {
+            background-color: #fff3e0;
+            border-color: #ffb74d;
             animation: pulse 1.5s infinite;
         }
-        
-        @keyframes pulse {
-            0% { transform: scale(1); }
-            50% { transform: scale(1.05); }
-            100% { transform: scale(1); }
+
+        .plot-content {
+            text-align: center;
+            padding: 10px;
+            width: 100%;
+            z-index: 2;
         }
-        
-        .bed-plant {
-            font-size: 1.5rem;
+
+        .plant-icon {
+            font-size: 2.8rem;
             margin-bottom: 5px;
+            transition: transform 0.5s ease;
         }
-        
-        .bed-timer {
-            font-size: 0.7rem;
-            background: rgba(0,0,0,0.1);
-            border-radius: 10px;
-            padding: 2px 5px;
-            margin-top: 3px;
+
+        .plot.ready .plant-icon {
+            animation: bounce 0.8s infinite alternate;
+        }
+
+        .plant-name {
+            font-size: 0.85rem;
+            font-weight: 600;
+            margin-bottom: 6px;
             white-space: nowrap;
-            overflow: visible;
-            text-overflow: clip;
+            overflow: hidden;
+            text-overflow: ellipsis;
         }
-        
+
+        .progress-container {
+            width: 85%;
+            height: 8px;
+            background-color: #e0e0e0;
+            border-radius: 5px;
+            overflow: hidden;
+            margin-top: 8px;
+        }
+
+        .progress-bar {
+            height: 100%;
+            background: linear-gradient(90deg, var(--primary), var(--secondary));
+            border-radius: 5px;
+            transition: width 0.5s ease;
+        }
+
+        .time-remaining {
+            font-size: 0.75rem;
+            color: var(--text-secondary);
+            margin-top: 5px;
+            font-weight: 500;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .action-panel {
+            background-color: var(--surface);
+            border-radius: var(--border-radius);
+            padding: 20px;
+            box-shadow: var(--shadow);
+            margin-bottom: 30px;
+        }
+
+        .harvest-all-btn {
+            width: 100%;
+            padding: 16px;
+            font-size: 1.2rem;
+            font-weight: 700;
+        }
+
+        .language-switcher {
+            display: flex;
+            justify-content: center;
+            gap: 20px;
+            margin-top: auto;
+            padding: 16px 0;
+        }
+
+        .lang-btn {
+            background: none;
+            border: none;
+            font-size: 1rem;
+            font-weight: 600;
+            color: var(--text-secondary);
+            cursor: pointer;
+            padding: 10px 20px;
+            border-radius: 50px;
+            transition: var(--transition);
+            border: 2px solid #e0e0e0;
+        }
+
+        .lang-btn.active {
+            background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+            color: white;
+            border-color: var(--primary);
+        }
+
+        /* Модальные окна */
         .modal {
             position: fixed;
             top: 0;
             left: 0;
-            right: 0;
-            bottom: 0;
-            background: rgba(0,0,0,0.7);
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0,0,0,0.7);
             display: flex;
-            justify-content: center;
             align-items: center;
+            justify-content: center;
             z-index: 1000;
-            padding: 20px;
+            opacity: 0;
+            visibility: hidden;
+            transition: all 0.3s ease;
         }
-        
+
+        .modal.active {
+            opacity: 1;
+            visibility: visible;
+        }
+
         .modal-content {
-            background: white;
-            border-radius: 20px;
+            background-color: var(--surface);
+            width: 90%;
+            max-width: 450px;
+            border-radius: var(--border-radius);
             padding: 25px;
-            max-width: 100%;
-            width: 400px;
-            max-height: 90vh;
+            box-shadow: 0 15px 40px rgba(0,0,0,0.25);
+            transform: translateY(30px);
+            transition: transform 0.4s ease;
+            max-height: 85vh;
             overflow-y: auto;
-            position: relative;
         }
-        
-        .modal-title {
-            font-size: 1.4rem;
-            margin-bottom: 20px;
-            text-align: center;
-            color: #1b5e20;
+
+        .modal.active .modal-content {
+            transform: translateY(0);
         }
-        
-        .close-modal {
-            position: absolute;
-            top: 15px;
-            right: 15px;
-            font-size: 2rem;
-            cursor: pointer;
-            color: #f44336;
-            font-weight: bold;
-            width: 30px;
-            height: 30px;
+
+        .modal-header {
             display: flex;
+            justify-content: space-between;
             align-items: center;
-            justify-content: center;
-            z-index: 10;
+            margin-bottom: 20px;
+            padding-bottom: 15px;
+            border-bottom: 2px solid var(--primary);
         }
-        
-        .lang-switcher {
-            position: fixed;
-            bottom: 15px;
-            left: 15px;
-            right: 15px;
-            display: flex;
-            gap: 10px;
-            z-index: 10;
+
+        .modal-title {
+            font-size: 1.6rem;
+            font-weight: 700;
+            color: var(--primary-dark);
         }
-        
-        .lang-btn {
-            flex: 1;
-            background: #2e7d32;
-            color: white;
+
+        .close-btn {
+            background: none;
             border: none;
-            border-radius: 10px;
-            padding: 12px;
-            font-weight: bold;
-            font-size: 1rem;
+            font-size: 1.8rem;
             cursor: pointer;
+            color: var(--text-secondary);
+            transition: var(--transition);
         }
-        
-        .progress-bar {
-            height: 8px;
-            background: #e0e0e0;
-            border-radius: 4px;
-            margin-top: 5px;
+
+        .close-btn:hover {
+            color: var(--primary);
+            transform: rotate(90deg);
+        }
+
+        /* Стили для магазина */
+        .shop-items {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 18px;
+        }
+
+        .shop-item {
+            background: linear-gradient(to bottom, #ffffff, #f5f5f5);
+            border-radius: var(--border-radius);
+            padding: 18px;
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            transition: var(--transition);
+            border: 1px solid #e0e0e0;
+            box-shadow: var(--shadow);
+            position: relative;
             overflow: hidden;
         }
-        
-        .progress-fill {
-            height: 100%;
-            background: #4caf50;
-            border-radius: 4px;
-            width: 0%;
-            transition: width 0.5s;
+
+        .shop-item:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 12px 25px rgba(0,0,0,0.15);
         }
-        
+
+        .shop-item-header {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .shop-item-icon {
+            font-size: 2.5rem;
+            min-width: 50px;
+            text-align: center;
+        }
+
+        .shop-item-name {
+            font-weight: 700;
+            font-size: 1.1rem;
+            color: var(--primary-dark);
+            word-break: break-word;
+            flex: 1;
+        }
+
+        .shop-item-price {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            font-size: 1rem;
+            font-weight: 600;
+        }
+
+        .shop-item-stats {
+            font-size: 0.85rem;
+            color: var(--text-secondary);
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 6px;
+            margin-top: 5px;
+        }
+
+        .buy-btn {
+            margin-top: 10px;
+            width: 100%;
+        }
+
+        .availability {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            background-color: var(--secondary);
+            color: var(--text-primary);
+            font-weight: 700;
+            padding: 4px 10px;
+            border-radius: 20px;
+            font-size: 0.85rem;
+        }
+
+        /* Стили для инвентаря */
+        .inventory-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 15px;
+        }
+
+        .inventory-item {
+            background: linear-gradient(to bottom, #ffffff, #f5f5f5);
+            border-radius: var(--border-radius);
+            padding: 18px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 10px;
+            border: 1px solid #e0e0e0;
+            box-shadow: var(--shadow);
+            transition: var(--transition);
+        }
+
+        .inventory-item:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 10px 20px rgba(0,0,0,0.1);
+        }
+
+        .inventory-item-icon {
+            font-size: 2.5rem;
+        }
+
+        .inventory-item-name {
+            font-weight: 600;
+            font-size: 1rem;
+            text-align: center;
+            min-height: 40px;
+            display: flex;
+            align-items: center;
+        }
+
+        .inventory-item-quantity {
+            background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+            color: white;
+            border-radius: 50px;
+            padding: 4px 12px;
+            font-size: 0.95rem;
+            font-weight: 700;
+            min-width: 35px;
+        }
+
+        .inventory-actions {
+            display: flex;
+            gap: 8px;
+            margin-top: 10px;
+            width: 100%;
+        }
+
+        .action-btn {
+            flex: 1;
+            padding: 8px;
+            font-size: 0.85rem;
+        }
+
+        .inventory-fruits {
+            width: 100%;
+            margin-top: 10px;
+            background: #e8f5e9;
+            border-radius: 10px;
+            padding: 10px;
+            max-height: 150px;
+            overflow-y: auto;
+        }
+
+        .fruit-item {
+            display: flex;
+            justify-content: space-between;
+            padding: 5px 0;
+            border-bottom: 1px dashed #c8e6c9;
+            font-size: 0.9rem;
+        }
+
+        .fruit-item:last-child {
+            border-bottom: none;
+        }
+
+        .fruit-weight {
+            font-weight: 600;
+            color: var(--primary-dark);
+        }
+
+        /* Стили для сбора урожая */
+        .harvest-summary {
+            margin-top: 20px;
+            background-color: #e8f5e9;
+            border-radius: var(--border-radius);
+            padding: 15px;
+            border-left: 4px solid var(--success);
+        }
+
+        .harvest-title {
+            font-weight: 700;
+            margin-bottom: 10px;
+            color: var(--success);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .harvest-item {
+            display: flex;
+            justify-content: space-between;
+            padding: 8px 0;
+            border-bottom: 1px dashed #c8e6c9;
+        }
+
+        .harvest-item:last-child {
+            border-bottom: none;
+        }
+
+        /* Анимации */
+        @keyframes pulse {
+            0% { transform: scale(1); box-shadow: 0 0 0 0 rgba(255, 193, 7, 0.7); }
+            70% { transform: scale(1.02); box-shadow: 0 0 0 10px rgba(255, 193, 7, 0); }
+            100% { transform: scale(1); }
+        }
+
+        @keyframes bounce {
+            0% { transform: translateY(0); }
+            100% { transform: translateY(-10px); }
+        }
+
+        @keyframes shine {
+            0% { text-shadow: 0 0 5px rgba(255, 215, 0, 0); }
+            50% { text-shadow: 0 0 15px rgba(255, 215, 0, 0.8); }
+            100% { text-shadow: 0 0 5px rgba(255, 215, 0, 0); }
+        }
+
         .notification {
             position: fixed;
             top: 20px;
             left: 50%;
             transform: translateX(-50%);
-            background: #4caf50;
+            background: linear-gradient(135deg, var(--primary), var(--primary-dark));
             color: white;
-            padding: 15px 25px;
-            border-radius: 10px;
-            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+            padding: 15px 30px;
+            border-radius: 50px;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.2);
             z-index: 1001;
-            animation: slideIn 0.3s, fadeOut 0.5s 2.5s;
+            animation: grow 0.4s ease, grow 0.4s ease reverse forwards 2.5s;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 10px;
         }
-        
-        .shop-timer {
-            text-align: center;
-            margin-bottom: 15px;
-            font-weight: bold;
-            background: #e3f2fd;
-            padding: 8px;
-            border-radius: 10px;
+
+        @keyframes grow {
+            0% { opacity: 0; top: 0; }
+            100% { opacity: 1; top: 20px; }
         }
-        
-        @keyframes slideIn {
-            from { top: -50px; opacity: 0; }
-            to { top: 20px; opacity: 1; }
+
+        .collect-animation {
+            position: absolute;
+            font-size: 2rem;
+            animation: floatUp 1s ease-out forwards;
+            z-index: 10;
+            pointer-events: none;
         }
-        
-        @keyframes fadeOut {
-            from { opacity: 1; }
-            to { opacity: 0; }
+
+        @keyframes floatUp {
+            0% { transform: translateY(0); opacity: 1; }
+            100% { transform: translateY(-100px); opacity: 0; }
         }
-        
-        @media (max-width: 480px) {
-            .beds-container {
-                grid-template-columns: repeat(4, 1fr);
-            }
-            
-            .button-grid {
+
+        /* Адаптивность */
+        @media (max-width: 400px) {
+            .farm-grid {
                 grid-template-columns: repeat(2, 1fr);
             }
             
-            h1 {
-                font-size: 1.5rem;
+            .shop-items {
+                grid-template-columns: 1fr;
             }
-        }
-        
-        .welcome-modal-content {
-            background: white;
-            border-radius: 20px;
-            padding: 25px;
-            max-width: 100%;
-            width: 400px;
-            max-height: 90vh;
-            overflow-y: auto;
-            position: relative;
-        }
-        
-        .welcome-text {
-            margin-bottom: 20px;
-            line-height: 1.6;
-        }
-        
-        .welcome-title {
-            font-size: 1.5rem;
-            text-align: center;
-            margin-bottom: 15px;
-            color: #1b5e20;
+            
+            .inventory-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .btn {
+                padding: 10px 15px;
+                font-size: 0.9rem;
+            }
         }
     </style>
 </head>
 <body>
     <div class="container">
-        <header>
-            <h1 id="headerTitle">🌱 GaGBot - Садовая ферма</h1>
-            <p id="headerSubtitle">Выращивайте растения и собирайте урожай!</p>
-        </header>
-        
-        <div class="balance-container">
-            <div id="balanceText">💰 Баланс: <span id="balance">20</span> монет</div>
+        <!-- Заголовок с названием бота -->
+        <div class="header-title">
+            <h1>GaG Farm</h1>
+            <div class="subtitle" id="subtitle">Выращивай, собирай, продавай!</div>
         </div>
-        
-        <div class="section">
-            <h2 class="section-title">Главное меню</h2>
-            <div class="button-grid">
-                <button class="btn btn-shop" onclick="openShop()">🛒 Магазин</button>
-                <button class="btn btn-inventory" onclick="openInventory()">📦 Инвентарь</button>
-                <button class="btn" onclick="openBeds()">🪴 Мои грядки</button>
-                <button class="btn btn-collect" onclick="collectAll()">🌾 Собрать урожай</button>
-                <button class="btn btn-plant" onclick="openPlanting()">🌱 Посадить</button>
-                <button class="btn btn-sell" onclick="openSelling()">💰 Продать</button>
+
+        <!-- Шапка с балансом и кнопками -->
+        <div class="game-header">
+            <div class="balance-container">
+                <i class="fas fa-coins coins-icon"></i>
+                <div class="balance" id="balance">20</div>
+            </div>
+            <div class="action-buttons">
+                <button class="btn btn-secondary" id="harvestAllBtn">
+                    <i class="fas fa-hand-holding-usd"></i>
+                    <span id="harvestBtnText">Собрать всё</span>
+                </button>
+                <button class="btn btn-neutral" id="shopBtn">
+                    <i class="fas fa-store"></i>
+                </button>
+                <button class="btn btn-neutral" id="inventoryBtn">
+                    <i class="fas fa-shopping-bag"></i>
+                </button>
             </div>
         </div>
-        
-        <div class="section">
-            <h2 class="section-title" id="bedsTitle">Мои грядки</h2>
-            <div class="beds-container" id="bedsContainer">
-                <!-- Грядки будут заполнены через JS -->
+
+        <!-- Секция грядок -->
+        <div class="action-panel">
+            <h2 class="section-title">
+                <i class="fas fa-seedling"></i>
+                <span id="farmTitle">Ваши грядки</span>
+            </h2>
+            <div class="farm-grid" id="farmGrid">
+                <!-- Грядки будут генерироваться через JS -->
             </div>
         </div>
-        
-        <div class="lang-switcher">
-            <button class="lang-btn" onclick="setLanguage('ru')">🇷🇺 Русский</button>
-            <button class="lang-btn" onclick="setLanguage('en')">🇬🇧 English</button>
+
+        <!-- Переключатель языка -->
+        <div class="language-switcher">
+            <button class="lang-btn active" data-lang="ru">Русский</button>
+            <button class="lang-btn" data-lang="en">English</button>
         </div>
     </div>
-    
-    <!-- Модальные окна -->
-    <div id="shopModal" class="modal" style="display: none;">
+
+    <!-- Модальное окно магазина -->
+    <div class="modal" id="shopModal">
         <div class="modal-content">
-            <span class="close-modal" onclick="closeModal('shopModal')">&times;</span>
-            <h2 class="modal-title">🛒 Магазин семян</h2>
-            <div id="shopTimer" class="shop-timer"></div>
-            <div id="shopItems">
-                <!-- Товары магазина -->
+            <div class="modal-header">
+                <h2 class="modal-title">
+                    <i class="fas fa-store"></i>
+                    <span id="shopTitle">Магазин семян</span>
+                </h2>
+                <button class="close-btn" id="closeShopModal">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <div class="shop-items" id="shopItems">
+                <!-- Товары магазина будут генерироваться через JS -->
+            </div>
+            <div class="shop-timer" style="margin-top: 20px; text-align: center; font-weight: 500; color: var(--text-secondary);">
+                <i class="fas fa-sync-alt"></i> 
+                <span id="shopTimer">Магазин обновится через: 5:00</span>
             </div>
         </div>
     </div>
-    
-    <div id="inventoryModal" class="modal" style="display: none;">
+
+    <!-- Модальное окно инвентаря -->
+    <div class="modal" id="inventoryModal">
         <div class="modal-content">
-            <span class="close-modal" onclick="closeModal('inventoryModal')">&times;</span>
-            <h2 class="modal-title">📦 Ваш инвентарь</h2>
-            <div id="inventoryItems">
-                <!-- Инвентарь -->
+            <div class="modal-header">
+                <h2 class="modal-title">
+                    <i class="fas fa-shopping-bag"></i>
+                    <span id="inventoryTitle">Ваш инвентарь</span>
+                </h2>
+                <button class="close-btn" id="closeInventoryModal">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <div class="inventory-grid" id="inventoryGrid">
+                <!-- Инвентарь будет генерироваться через JS -->
             </div>
         </div>
     </div>
-    
-    <div id="plantingModal" class="modal" style="display: none;">
+
+    <!-- Модальное окно сбора урожая -->
+    <div class="modal" id="harvestModal">
         <div class="modal-content">
-            <span class="close-modal" onclick="closeModal('plantingModal')">&times;</span>
-            <h2 class="modal-title">🌱 Посадка растений</h2>
-            <p>Выберите растение из инвентаря и грядку для посадки</p>
-            <div id="plantingContent">
-                <!-- Контент для посадки -->
+            <div class="modal-header">
+                <h2 class="modal-title">
+                    <i class="fas fa-hand-holding-usd"></i>
+                    <span id="harvestTitle">Урожай собран!</span>
+                </h2>
+                <button class="close-btn" id="closeHarvestModal">
+                    <i class="fas fa-times"></i>
+                </button>
             </div>
-        </div>
-    </div>
-    
-    <div id="sellingModal" class="modal" style="display: none;">
-        <div class="modal-content">
-            <span class="close-modal" onclick="closeModal('sellingModal')">&times;</span>
-            <h2 class="modal-title">💰 Продажа растений</h2>
-            <p>Выберите растение для продажи</p>
-            <div id="sellingContent">
-                <!-- Контент для продажи -->
+            <div class="harvest-summary" id="harvestSummary">
+                <!-- Сводка по собранному урожаю -->
             </div>
-        </div>
-    </div>
-    
-    <div id="plantInfoModal" class="modal" style="display: none;">
-        <div class="modal-content">
-            <span class="close-modal" onclick="closeModal('plantInfoModal')">&times;</span>
-            <h2 class="modal-title" id="plantInfoTitle">Информация о растении</h2>
-            <div id="plantInfoContent">
-                <!-- Информация о растении -->
-            </div>
-        </div>
-    </div>
-    
-    <!-- Приветственное модальное окно -->
-    <div id="welcomeModal" class="modal" style="display: none;">
-        <div class="welcome-modal-content">
-            <h2 class="welcome-title" id="welcomeTitle">Добро пожаловать в GaGBot!</h2>
-            <div class="welcome-text" id="welcomeTextRu">
-                <p>🌱 Добро пожаловать в GaGBot - игру-ферму в Telegram!</p>
-                <p>🎮 В этой игре вы можете:</p>
-                <ul>
-                    <li>Покупать семена в магазине</li>
-                    <li>Сажать растения на грядках</li>
-                    <li>Собирать урожай</li>
-                    <li>Продавать растения за монеты</li>
-                    <li>Расширять свою ферму</li>
-                </ul>
-                <p>💡 Начните с покупки семян в магазине и посадите их на грядках. После сбора урожая продавайте растения, чтобы получить больше монет!</p>
-                <p>⚙️ Вы можете переключить язык в любое время в нижней части экрана.</p>
-                <p>Удачи в развитии вашей фермы! 🌾</p>
-            </div>
-            <div class="welcome-text" id="welcomeTextEn" style="display: none;">
-                <p>🌱 Welcome to GaGBot - a Telegram farming game!</p>
-                <p>🎮 In this game you can:</p>
-                <ul>
-                    <li>Buy seeds in the shop</li>
-                    <li>Plant seeds in garden beds</li>
-                    <li>Harvest crops</li>
-                    <li>Sell plants for coins</li>
-                    <li>Expand your farm</li>
-                </ul>
-                <p>💡 Start by buying seeds in the shop and planting them. After harvesting, sell your plants to earn more coins!</p>
-                <p>⚙️ You can switch language anytime at the bottom of the screen.</p>
-                <p>Good luck with your farming adventure! 🌾</p>
-            </div>
-            <div style="display: flex; gap: 10px; margin-top: 20px;">
-                <button class="lang-btn" onclick="setWelcomeLang('ru')">🇷🇺 Русский</button>
-                <button class="lang-btn" onclick="setWelcomeLang('en')">🇬🇧 English</button>
-            </div>
-            <button class="btn" onclick="closeModal('welcomeModal')" style="margin-top: 20px; width: 100%;">Начать игру</button>
         </div>
     </div>
 
     <script>
-        // Инициализация Telegram Web App
-        const tg = window.Telegram.WebApp;
-        tg.expand();
-        tg.MainButton.hide();
-        
-        // Переводы
-        const translations = {
-            ru: {
-                balance: "💰 Баланс: ",
-                shop: "🛒 Магазин",
-                inventory: "📦 Инвентарь",
-                beds: "🪴 Мои грядки",
-                collect: "🌾 Собрать урожай",
-                plant: "🌱 Посадить",
-                sell: "💰 Продать",
-                sellAll: "💰 Продать всё",
-                mainMenu: "Главное меню",
-                myBeds: "Мои грядки",
-                seedShop: "🛒 Магазин семян",
-                yourInventory: "📦 Ваш инвентарь",
-                planting: "🌱 Посадка растений",
-                selling: "💰 Продажа растений",
-                plantInfo: "Информация о растении",
-                buy: "Купить",
-                selectSlot: "Выберите грядку:",
-                plantHere: "Посадить здесь",
-                sellFor: "Продать за",
-                weight: "Вес",
-                fruits: "Плодов",
-                pricePerKg: "Цена за кг",
-                seedPrice: "Цена семян",
-                growthTime: "Время роста",
-                selectPlant: "Выберите растение из инвентаря",
-                selectToSell: "Выберите растение для продажи",
-                emptySlot: "Пустая грядка",
-                free: "Свободно",
-                growing: "Растет",
-                ready: "Готово!",
-                collectAll: "Собрать все",
-                collected: "Собрано",
-                planted: "Посажено",
-                sold: "Продано",
-                notEnoughMoney: "Недостаточно денег!",
-                notEnoughSeeds: "Недостаточно семян!",
-                slotOccupied: "Грядка занята!",
-                inventoryEmpty: "Инвентарь пуст!",
-                available: "Доступно:",
-                shopUpdate: "Обновление магазина через:",
-                bought: "Куплено",
-                coins: "монет",
-                refreshIn: "Обновление через:",
-                title: "🌱 GaGBot - Садовая ферма",
-                subtitle: "Выращивайте растения и собирайте урожай!",
-                noPlantsToSell: "Нет растений для продажи",
-                seed: "Семя"
+        // Игровые данные
+        const gameData = {
+            balance: 20,
+            plots: Array(30).fill().map(() => ({ plant: null, progress: 0, fruits: [] })),
+            inventory: {
+                seeds: {},
+                plants: {}
             },
-            en: {
-                balance: "💰 Balance: ",
-                shop: "🛒 Shop",
-                inventory: "📦 Inventory",
-                beds: "🪴 My Beds",
-                collect: "🌾 Harvest",
-                plant: "🌱 Plant",
-                sell: "💰 Sell",
-                sellAll: "💰 Sell All",
-                mainMenu: "Main Menu",
-                myBeds: "My Garden Beds",
-                seedShop: "🛒 Seed Shop",
-                yourInventory: "📦 Your Inventory",
-                planting: "🌱 Planting",
-                selling: "💰 Selling",
-                plantInfo: "Plant Information",
-                buy: "Buy",
-                selectSlot: "Select a bed:",
-                plantHere: "Plant Here",
-                sellFor: "Sell for",
-                weight: "Weight",
-                fruits: "Fruits",
-                pricePerKg: "Price per kg",
-                seedPrice: "Seed price",
-                growthTime: "Growth time",
-                selectPlant: "Select a plant from inventory",
-                selectToSell: "Select a plant to sell",
-                emptySlot: "Empty bed",
-                free: "Free",
-                growing: "Growing",
-                ready: "Ready!",
-                collectAll: "Harvest All",
-                collected: "Collected",
-                planted: "Planted",
-                sold: "Sold",
-                notEnoughMoney: "Not enough money!",
-                notEnoughSeeds: "Not enough seeds!",
-                slotOccupied: "Bed is occupied!",
-                inventoryEmpty: "Inventory is empty!",
-                available: "Available:",
-                shopUpdate: "Shop update in:",
-                bought: "Bought",
-                coins: "coins",
-                refreshIn: "Refresh in:",
-                title: "🌱 GaGBot - Garden Farm",
-                subtitle: "Grow plants and harvest!",
-                noPlantsToSell: "No plants to sell",
-                seed: "Seed"
-            }
+            plants: {
+                carrot: { 
+                    name: { ru: "Морковь", en: "Carrot" }, 
+                    icon: "🥕", 
+                    seedPrice: 10, 
+                    growthTime: 60, 
+                    minWeight: 0.1, 
+                    maxWeight: 0.3, 
+                    pricePerKg: 60, // Увеличенная цена
+                    fruitCount: 1,
+                    repeatGrowth: false,
+                    availabilityChance: 1
+                },
+                tomato: { 
+                    name: { ru: "Помидор", en: "Tomato" }, 
+                    icon: "🍅", 
+                    seedPrice: 20, 
+                    growthTime: 120, 
+                    minWeight: 0.2, 
+                    maxWeight: 0.5, 
+                    pricePerKg: 90, // Увеличенная цена
+                    fruitCount: 3,
+                    repeatGrowth: true,
+                    availabilityChance: 0.8
+                },
+                potato: { 
+                    name: { ru: "Картофель", en: "Potato" }, 
+                    icon: "🥔", 
+                    seedPrice: 15, 
+                    growthTime: 180, 
+                    minWeight: 0.3, 
+                    maxWeight: 0.7, 
+                    pricePerKg: 45, // Увеличенная цена
+                    fruitCount: 5,
+                    repeatGrowth: false,
+                    availabilityChance: 0.9
+                },
+                strawberry: { 
+                    name: { ru: "Клубника", en: "Strawberry" }, 
+                    icon: "🍓", 
+                    seedPrice: 25, 
+                    growthTime: 90, 
+                    minWeight: 0.05, 
+                    maxWeight: 0.1, 
+                    pricePerKg: 120, // Увеличенная цена
+                    fruitCount: 8,
+                    repeatGrowth: true,
+                    availabilityChance: 0.7
+                },
+                cucumber: { 
+                    name: { ru: "Огурец", en: "Cucumber" }, 
+                    icon: "🥒", 
+                    seedPrice: 30, 
+                    growthTime: 150, 
+                    minWeight: 0.4, 
+                    maxWeight: 0.8, 
+                    pricePerKg: 52, // Увеличенная цена
+                    fruitCount: 2,
+                    repeatGrowth: true,
+                    availabilityChance: 0.6
+                },
+                mango: { 
+                    name: { ru: "Манго", en: "Mango" }, 
+                    icon: "🥭", 
+                    seedPrice: 150, 
+                    growthTime: 300, 
+                    minWeight: 0.5, 
+                    maxWeight: 1.5, 
+                    pricePerKg: 150, // Увеличенная цена
+                    fruitCount: 1,
+                    repeatGrowth: true,
+                    availabilityChance: 0.4
+                },
+                grapes: { 
+                    name: { ru: "Виноград", en: "Grapes" }, 
+                    icon: "🍇", 
+                    seedPrice: 120, 
+                    growthTime: 240, 
+                    minWeight: 0.1, 
+                    maxWeight: 0.3, 
+                    pricePerKg: 180, // Увеличенная цена
+                    fruitCount: 12,
+                    repeatGrowth: true,
+                    availabilityChance: 0.5
+                },
+                watermelon: { 
+                    name: { ru: "Арбуз", en: "Watermelon" }, 
+                    icon: "🍉", 
+                    seedPrice: 80, 
+                    growthTime: 360, 
+                    minWeight: 3, 
+                    maxWeight: 10, 
+                    pricePerKg: 37, // Увеличенная цена
+                    fruitCount: 1,
+                    repeatGrowth: false,
+                    availabilityChance: 0.3
+                },
+                peach: { 
+                    name: { ru: "Персик", en: "Peach" }, 
+                    icon: "🍑", 
+                    seedPrice: 70, 
+                    growthTime: 280, 
+                    minWeight: 0.3, 
+                    maxWeight: 0.6, 
+                    pricePerKg: 105, // Увеличенная цена
+                    fruitCount: 3,
+                    repeatGrowth: true,
+                    availabilityChance: 0.6
+                },
+                coconut: { 
+                    name: { ru: "Кокос", en: "Coconut" }, 
+                    icon: "🥥", 
+                    seedPrice: 200, 
+                    growthTime: 600, 
+                    minWeight: 1, 
+                    maxWeight: 2.5, 
+                    pricePerKg: 135, // Увеличенная цена
+                    fruitCount: 1,
+                    repeatGrowth: true,
+                    availabilityChance: 0.2
+                }
+            },
+            currentLanguage: 'ru',
+            lastSave: Date.now(),
+            shopTimer: 300, // 5 минут в секундах
+            shopItems: {},
+            nextShopUpdate: Date.now() + 300000 // 5 минут в миллисекундах
         };
-        
-        let currentLang = 'ru';
-        let shopRefreshTimer = null;
-        let shopRefreshTime = 300; // 5 минут в секундах
-        
-        // Класс растения
-        class Plant {
-            constructor(name, min_weight, max_weight, price_per_kg, seed_price, grow_time, availability_chance, repeat_growth = false, fruit_count = 1) {
-                this.name = name;
-                this.min_weight = min_weight;
-                this.max_weight = max_weight;
-                this.price_per_kg = price_per_kg;
-                this.seed_price = seed_price;
-                this.grow_time = grow_time * 1000; // конвертируем в миллисекунды
-                this.fruit_count = fruit_count;
-                this.current_fruits = 0;
-                this.fruits_to_grow = fruit_count;
-                this.current_weight = 0.0;
-                this.growing = false;
-                this.availability_chance = availability_chance;
-                this.available_quantity = 0;
-                this.repeat_growth = repeat_growth;
-                this.plantedAt = 0;
-                this.growthProgress = 0;
-            }
-            
-            startGrowth() {
-                this.growing = true;
-                this.plantedAt = Date.now();
-                this.growthProgress = 0;
-                
-                // Запускаем рост
-                this.growInterval = setInterval(() => {
-                    this.growthProgress = Math.min(100, ((Date.now() - this.plantedAt) / this.grow_time) * 100);
-                    
-                    if (this.growthProgress >= 100) {
-                        this.finishGrowth();
-                    }
-                    
-                    // Обновляем UI каждую секунду
-                    updateBeds();
-                }, 1000);
-            }
-            
-            finishGrowth() {
-                clearInterval(this.growInterval);
-                this.current_weight = this.randomFloat(this.min_weight, this.max_weight);
-                this.current_fruits += 1;
-                this.fruits_to_grow -= 1;
-                this.growing = false;
-                
-                // Если растение многократное, запускаем следующий цикл роста
-                if (this.repeat_growth && this.fruits_to_grow > 0) {
-                    this.startGrowth();
-                }
-                
-                // Обновляем UI после завершения роста
-                updateUI();
-            }
-            
-            randomFloat(min, max) {
-                return parseFloat((Math.random() * (max - min) + min).toFixed(2));
-            }
-            
-            isGrown() {
-                return !this.growing && this.current_fruits > 0;
-            }
-            
-            getSellPrice() {
-                return parseFloat((this.price_per_kg * this.current_weight * this.current_fruits).toFixed(2));
-            }
-            
-            getTimeLeft() {
-                if (!this.growing) return 0;
-                const elapsed = Date.now() - this.plantedAt;
-                return Math.max(0, this.grow_time - elapsed);
-            }
+
+        // DOM элементы
+        const elements = {
+            balance: document.getElementById('balance'),
+            farmGrid: document.getElementById('farmGrid'),
+            shopBtn: document.getElementById('shopBtn'),
+            inventoryBtn: document.getElementById('inventoryBtn'),
+            harvestAllBtn: document.getElementById('harvestAllBtn'),
+            shopModal: document.getElementById('shopModal'),
+            inventoryModal: document.getElementById('inventoryModal'),
+            harvestModal: document.getElementById('harvestModal'),
+            closeShopModal: document.getElementById('closeShopModal'),
+            closeInventoryModal: document.getElementById('closeInventoryModal'),
+            closeHarvestModal: document.getElementById('closeHarvestModal'),
+            shopItems: document.getElementById('shopItems'),
+            inventoryGrid: document.getElementById('inventoryGrid'),
+            harvestSummary: document.getElementById('harvestSummary'),
+            langButtons: document.querySelectorAll('.lang-btn'),
+            shopTimer: document.getElementById('shopTimer'),
+            subtitle: document.getElementById('subtitle'),
+            harvestBtnText: document.getElementById('harvestBtnText'),
+            farmTitle: document.getElementById('farmTitle'),
+            shopTitle: document.getElementById('shopTitle'),
+            inventoryTitle: document.getElementById('inventoryTitle'),
+            harvestTitle: document.getElementById('harvestTitle')
+        };
+
+        // Инициализация игры
+        function initGame() {
+            loadGame();
+            updateShopItems();
+            renderFarm();
+            renderShop();
+            renderInventory();
+            setupEventListeners();
+            startGameLoop();
+            startShopTimer();
+            updateUI(); // Обновляем перевод при инициализации
         }
-        
-        // Класс фермы (игрового состояния)
-        class Farm {
-            constructor() {
-                this.balance = 20; // Начальный баланс изменен на 20
-                this.slots = 30;
-                this.plants = Array(this.slots).fill(null);
-                
-                this.plantTypes = [
-                    new Plant("🥕 Морковь", 0.1, 2, 40, 10, 5, 1),
-                    new Plant("🍅 Помидор", 3, 9, 60, 800, 40, 1, true, 3),
-                    new Plant("🥔 Картошка", 0.01, 0.2, 17000, 600, 20, 0.35),
-                    new Plant("🥒 Огурец", 2, 23, 1051, 4000, 300, 0.3),
-                    new Plant("🥬 Салат", 0.1, 0.6, 6000, 1000, 60, 0.07),
-                    new Plant("🥭 Манго", 10, 20, 3000, 100000, 500, 0.02, true, 5),
-                    new Plant("🍇 Виноград", 3, 9, 3492.5, 850000, 400, 0.01, true, 7),
-                    new Plant("🍓 Клубника", 0.21, 1.92, 60, 50, 8, 1, true, 3),
-                    new Plant("🍉 Арбуз", 3, 15, 600, 2500, 200, 0.12),
-                    new Plant("🍑 Персик", 5.64, 52.45, 660, 8000, 200, 0.35, true, 3),
-                    new Plant("🥥 Кокос", 10, 50, 504, 6000, 25200, 0.35, true, 20),
-                    new Plant("🥝 Киви", 1, 1.21, 410, 8000, 120, 0.45),
-                    new Plant("🍈 Дыня", 1, 2, 27, 1300, 25, 0.16, true),
-                    new Plant("🍒 Вишня", 0.1, 1, 120, 400, 22, 1, true, 6),
-                    new Plant("🌰 Орех", 1, 5, 100, 3250, 160, 0.1, true, 6),
-                    new Plant("🌶️ Перец", 1, 4, 3811, 1000000, 60, 0.01, true, 6),
-                    new Plant("🌽 Свекла", 2, 6, 1650, 16000, 320, 0.16, true)
-                ];
-                
-                this.inventory = [];
-                this.loadGame();
-                this.updateShop();
-            }
+
+        // Настройка обработчиков событий
+        function setupEventListeners() {
+            elements.shopBtn.addEventListener('click', () => toggleModal(elements.shopModal));
+            elements.inventoryBtn.addEventListener('click', () => toggleModal(elements.inventoryModal));
+            elements.closeShopModal.addEventListener('click', () => toggleModal(elements.shopModal));
+            elements.closeInventoryModal.addEventListener('click', () => toggleModal(elements.inventoryModal));
+            elements.closeHarvestModal.addEventListener('click', () => toggleModal(elements.harvestModal));
+            elements.harvestAllBtn.addEventListener('click', harvestAll);
             
-            updateShop() {
-                for (const plant of this.plantTypes) {
-                    if (Math.random() < plant.availability_chance) {
-                        plant.available_quantity = Math.floor(Math.random() * 5) + 1;
-                    } else {
-                        plant.available_quantity = 0;
-                    }
-                }
-                this.saveGame();
-                
-                // Сбрасываем таймер обновления магазина
-                shopRefreshTime = 300;
-            }
-            
-            buySeed(plantIndex, quantity) {
-                const plant = this.plantTypes[plantIndex];
-                if (plant.available_quantity >= quantity) {
-                    const totalCost = plant.seed_price * quantity;
-                    if (this.balance >= totalCost) {
-                        this.balance -= totalCost;
-                        plant.available_quantity -= quantity;
-                        
-                        // Добавляем семена в инвентарь
-                        for (let i = 0; i < quantity; i++) {
-                            const seed = new Plant(
-                                plant.name, 
-                                plant.min_weight, 
-                                plant.max_weight, 
-                                plant.price_per_kg, 
-                                plant.seed_price, 
-                                plant.grow_time / 1000, 
-                                plant.availability_chance,
-                                plant.repeat_growth,
-                                plant.fruit_count
-                            );
-                            this.inventory.push(seed);
-                        }
-                        
-                        this.showNotification(`${translations[currentLang].bought} ${quantity} ${plant.name} за ${totalCost} ${translations[currentLang].coins}`);
-                        this.saveGame();
-                        updateUI(); // Обновляем UI сразу
-                        return true;
-                    } else {
-                        this.showNotification(translations[currentLang].notEnoughMoney);
-                        return false;
-                    }
-                } else {
-                    this.showNotification(translations[currentLang].notEnoughSeeds);
-                    return false;
-                }
-            }
-            
-            sellPlant(inventoryIndex) {
-                if (inventoryIndex >= 0 && inventoryIndex < this.inventory.length) {
-                    const plant = this.inventory[inventoryIndex];
-                    if (plant.isGrown()) {
-                        const price = plant.getSellPrice();
-                        this.balance += price;
-                        this.inventory.splice(inventoryIndex, 1);
-                        this.showNotification(`${translations[currentLang].sold} ${plant.name} ${translations[currentLang].sellFor} ${price} 💰`);
-                        this.saveGame();
-                        updateUI(); // Обновляем UI сразу
-                        return true;
-                    }
-                }
-                return false;
-            }
-            
-            sellAllPlants() {
-                let total = 0;
-                let soldCount = 0;
-                
-                // Продаем с конца, чтобы индексы не сдвигались
-                for (let i = this.inventory.length - 1; i >= 0; i--) {
-                    const plant = this.inventory[i];
-                    if (plant.isGrown()) {
-                        total += plant.getSellPrice();
-                        this.inventory.splice(i, 1);
-                        soldCount++;
-                    }
-                }
-                
-                if (soldCount > 0) {
-                    this.balance += total;
-                    this.showNotification(`${translations[currentLang].sold} ${soldCount} ${translations[currentLang].sellFor} ${total} ${translations[currentLang].coins}`);
-                    this.saveGame();
-                    updateUI(); // Обновляем UI сразу
-                    return true;
-                } else {
-                    this.showNotification(translations[currentLang].noPlantsToSell);
-                    return false;
-                }
-            }
-            
-            plantGrowth(slotIndex, seed) {
-                if (this.plants[slotIndex] === null) {
-                    const plant = new Plant(
-                        seed.name, 
-                        seed.min_weight, 
-                        seed.max_weight, 
-                        seed.price_per_kg, 
-                        seed.seed_price, 
-                        seed.grow_time / 1000, 
-                        seed.availability_chance,
-                        seed.repeat_growth,
-                        seed.fruit_count
-                    );
-                    
-                    // Удаляем семя из инвентаря
-                    const seedIndex = this.inventory.indexOf(seed);
-                    if (seedIndex !== -1) {
-                        this.inventory.splice(seedIndex, 1);
-                    }
-                    
-                    this.plants[slotIndex] = plant;
-                    plant.startGrowth();
-                    this.showNotification(`${translations[currentLang].planted} ${plant.name}`);
-                    this.saveGame();
-                    updateUI(); // Обновляем UI сразу
-                    return true;
-                } else {
-                    this.showNotification(translations[currentLang].slotOccupied);
-                    return false;
-                }
-            }
-            
-            collectPlants() {
-                let collected = 0;
-                for (let i = 0; i < this.plants.length; i++) {
-                    const plant = this.plants[i];
-                    if (plant && plant.isGrown()) {
-                        // Добавляем растение в инвентарь
-                        this.inventory.push(plant);
-                        
-                        // Если растение многократное, сбрасываем состояние
-                        if (plant.repeat_growth && plant.fruits_to_grow > 0) {
-                            plant.current_fruits = 0;
-                            plant.startGrowth();
-                        } else {
-                            this.plants[i] = null;
-                        }
-                        collected++;
-                    }
-                }
-                
-                if (collected > 0) {
-                    this.showNotification(`${translations[currentLang].collected} ${collected} растений!`);
-                } else {
-                    this.showNotification("Нет растений для сбора");
-                }
-                
-                this.saveGame();
-                updateUI(); // Обновляем UI сразу
-                return collected;
-            }
-            
-            saveGame() {
-                const gameData = {
-                    balance: this.balance,
-                    plants: this.plants.map(plant => plant ? this.serializePlant(plant) : null),
-                    inventory: this.inventory.map(plant => this.serializePlant(plant)),
-                    plantTypes: this.plantTypes.map(plant => ({
-                        available_quantity: plant.available_quantity
-                    })),
-                    shopRefreshTime: shopRefreshTime
-                };
-                localStorage.setItem('farmGame', JSON.stringify(gameData));
-            }
-            
-            loadGame() {
-                const savedData = localStorage.getItem('farmGame');
-                if (savedData) {
-                    const gameData = JSON.parse(savedData);
-                    this.balance = gameData.balance || 20;
-                    
-                    // Восстанавливаем время обновления магазина
-                    shopRefreshTime = gameData.shopRefreshTime || 300;
-                    
-                    // Восстанавливаем растения на грядках
-                    this.plants = gameData.plants.map(plantData => {
-                        if (!plantData) return null;
-                        const plant = this.deserializePlant(plantData);
-                        if (plant.growing) {
-                            // Проверяем, сколько времени прошло с момента посадки
-                            const timePassed = Date.now() - plantData.plantedAt;
-                            if (timePassed >= plant.grow_time) {
-                                plant.finishGrowth();
-                            } else {
-                                // Продолжаем рост
-                                plant.plantedAt = plantData.plantedAt;
-                                plant.growthProgress = (timePassed / plant.grow_time) * 100;
-                                plant.growInterval = setInterval(() => {
-                                    plant.growthProgress = Math.min(100, ((Date.now() - plant.plantedAt) / plant.grow_time) * 100);
-                                    if (plant.growthProgress >= 100) {
-                                        plant.finishGrowth();
-                                    }
-                                }, 1000);
-                            }
-                        }
-                        return plant;
-                    });
-                    
-                    // Восстанавливаем инвентарь
-                    this.inventory = gameData.inventory.map(plantData => this.deserializePlant(plantData));
-                    
-                    // Восстанавливаем магазин
-                    if (gameData.plantTypes) {
-                        for (let i = 0; i < gameData.plantTypes.length; i++) {
-                            this.plantTypes[i].available_quantity = gameData.plantTypes[i].available_quantity;
-                        }
-                    }
-                }
-            }
-            
-            serializePlant(plant) {
-                return {
-                    name: plant.name,
-                    min_weight: plant.min_weight,
-                    max_weight: plant.max_weight,
-                    price_per_kg: plant.price_per_kg,
-                    seed_price: plant.seed_price,
-                    grow_time: plant.grow_time,
-                    fruit_count: plant.fruit_count,
-                    current_fruits: plant.current_fruits,
-                    fruits_to_grow: plant.fruits_to_grow,
-                    current_weight: plant.current_weight,
-                    growing: plant.growing,
-                    availability_chance: plant.availability_chance,
-                    repeat_growth: plant.repeat_growth,
-                    plantedAt: plant.plantedAt,
-                    growthProgress: plant.growthProgress
-                };
-            }
-            
-            deserializePlant(plantData) {
-                const plant = new Plant(
-                    plantData.name,
-                    plantData.min_weight,
-                    plantData.max_weight,
-                    plantData.price_per_kg,
-                    plantData.seed_price,
-                    plantData.grow_time / 1000,
-                    plantData.availability_chance,
-                    plantData.repeat_growth,
-                    plantData.fruit_count
-                );
-                
-                plant.current_fruits = plantData.current_fruits;
-                plant.fruits_to_grow = plantData.fruits_to_grow;
-                plant.current_weight = plantData.current_weight;
-                plant.growing = plantData.growing;
-                plant.plantedAt = plantData.plantedAt;
-                plant.growthProgress = plantData.growthProgress;
-                
-                return plant;
-            }
-        }
-        
-        // Создаем экземпляр фермы
-        const farm = new Farm();
-        
-        // Элементы интерфейса
-        const balanceElement = document.getElementById('balance');
-        const balanceText = document.getElementById('balanceText');
-        const bedsContainer = document.getElementById('bedsContainer');
-        const headerTitle = document.getElementById('headerTitle');
-        const headerSubtitle = document.getElementById('headerSubtitle');
-        const bedsTitle = document.getElementById('bedsTitle');
-        
-        // Функции для работы с интерфейсом
-        function updateUI() {
-            // Обновляем баланс
-            balanceElement.textContent = farm.balance.toLocaleString();
-            balanceText.textContent = translations[currentLang].balance + farm.balance.toLocaleString() + " " + translations[currentLang].coins;
-            
-            // Обновляем заголовок
-            headerTitle.textContent = translations[currentLang].title;
-            headerSubtitle.textContent = translations[currentLang].subtitle;
-            bedsTitle.textContent = translations[currentLang].myBeds;
-            
-            // Обновляем грядки
-            updateBeds();
-        }
-        
-        function updateBeds() {
-            bedsContainer.innerHTML = '';
-            farm.plants.forEach((plant, index) => {
-                const bed = document.createElement('div');
-                bed.className = 'bed-slot';
-                
-                if (plant) {
-                    if (plant.isGrown()) {
-                        bed.classList.add('ready');
-                        bed.innerHTML = `
-                            <div class="bed-plant">${getPlantEmoji(plant.name)}</div>
-                            <div>${translations[currentLang].ready}</div>
-                            <div class="plant-details">${plant.current_fruits} ${translations[currentLang].fruits}</div>
-                        `;
-                    } else if (plant.growing) {
-                        bed.classList.add('growing');
-                        const timeLeft = plant.getTimeLeft();
-                        const minutes = Math.floor(timeLeft / 60000);
-                        const seconds = Math.floor((timeLeft % 60000) / 1000);
-                        
-                        bed.innerHTML = `
-                            <div class="bed-plant">${getPlantEmoji(plant.name)}</div>
-                            <div class="progress-bar">
-                                <div class="progress-fill" style="width: ${plant.growthProgress}%"></div>
-                            </div>
-                            <div class="bed-timer">${minutes}м ${seconds}с</div>
-                        `;
-                    }
-                } else {
-                    bed.classList.add('empty');
-                    bed.textContent = `${index + 1}\n${translations[currentLang].free}`;
-                }
-                
-                bed.onclick = () => openBedInfo(index);
-                bedsContainer.appendChild(bed);
+            elements.langButtons.forEach(btn => {
+                btn.addEventListener('click', () => switchLanguage(btn.dataset.lang));
             });
         }
-        
-        function getPlantEmoji(name) {
-            // Извлекаем эмодзи из начала названия
-            const emojiMatch = name.match(/^[\u{1F300}-\u{1F9FF}]{1,3}/u);
-            return emojiMatch ? emojiMatch[0] : '🌱';
-        }
-        
-        // Функции для модальных окон
-        function openShop() {
-            const shopItems = document.getElementById('shopItems');
-            shopItems.innerHTML = '';
+
+        // Обновление магазина
+        function updateShopItems() {
+            // Если магазин уже обновлялся и есть сохраненные данные, используем их
+            if (Object.keys(gameData.shopItems).length > 0) return;
             
-            // Таймер обновления магазина
-            const timerElement = document.getElementById('shopTimer');
-            const minutes = Math.floor(shopRefreshTime / 60);
-            const seconds = shopRefreshTime % 60;
-            timerElement.innerHTML = `${translations[currentLang].refreshIn} ${minutes}:${seconds < 10 ? '0' + seconds : seconds}`;
-            
-            farm.plantTypes.forEach((plant, index) => {
-                if (plant.available_quantity > 0) {
-                    const item = document.createElement('div');
-                    item.className = 'plant-item';
-                    item.innerHTML = `
-                        <div class="plant-info">
-                            <div class="plant-name">${plant.name}</div>
-                            <div class="plant-details">
-                                ${translations[currentLang].pricePerKg}: ${plant.price_per_kg} | 
-                                ${translations[currentLang].seedPrice}: ${plant.seed_price} | 
-                                ${translations[currentLang].growthTime}: ${plant.grow_time / 1000}s
-                            </div>
-                            <div>${translations[currentLang].available}: ${plant.available_quantity}</div>
-                        </div>
-                        <div class="plant-action">
-                            <button class="btn" onclick="buySeed(${index})">${translations[currentLang].buy}</button>
-                        </div>
-                    `;
-                    shopItems.appendChild(item);
-                }
-            });
-            
-            if (shopItems.innerHTML === '') {
-                shopItems.innerHTML = '<p>В магазине нет доступных семян. Попробуйте позже.</p>';
-            }
-            
-            document.getElementById('shopModal').style.display = 'flex';
-        }
-        
-        function openInventory() {
-            const inventoryItems = document.getElementById('inventoryItems');
-            inventoryItems.innerHTML = '';
-            
-            if (farm.inventory.length === 0) {
-                inventoryItems.innerHTML = `<p>${translations[currentLang].inventoryEmpty}</p>`;
-            } else {
-                farm.inventory.forEach((plant, index) => {
-                    const item = document.createElement('div');
-                    item.className = 'plant-item';
-                    
-                    let details = '';
-                    if (plant.isGrown()) {
-                        details = `${translations[currentLang].weight}: ${plant.current_weight}kg | ${translations[currentLang].sellFor}: ${plant.getSellPrice()}`;
-                    } else {
-                        details = translations[currentLang].seed;
-                    }
-                    
-                    item.innerHTML = `
-                        <div class="plant-info">
-                            <div class="plant-name">${plant.name}</div>
-                            <div class="plant-details">${details}</div>
-                        </div>
-                        <div class="plant-action">
-                            <button class="btn" onclick="showPlantInfo(${index})">ℹ️</button>
-                        </div>
-                    `;
-                    inventoryItems.appendChild(item);
-                });
-            }
-            
-            document.getElementById('inventoryModal').style.display = 'flex';
-        }
-        
-        function openPlanting() {
-            const plantingContent = document.getElementById('plantingContent');
-            plantingContent.innerHTML = '';
-            
-            if (farm.inventory.length === 0) {
-                plantingContent.innerHTML = `<p>${translations[currentLang].inventoryEmpty}</p>`;
-                document.getElementById('plantingModal').style.display = 'flex';
-                return;
-            }
-            
-            // Создаем выпадающий список растений
-            const selectPlant = document.createElement('select');
-            selectPlant.id = 'plantSelect';
-            selectPlant.className = 'btn';
-            selectPlant.style.width = '100%';
-            selectPlant.style.marginBottom = '20px';
-            
-            farm.inventory.forEach((plant, index) => {
-                const option = document.createElement('option');
-                option.value = index;
-                option.textContent = plant.name;
-                selectPlant.appendChild(option);
-            });
-            
-            plantingContent.innerHTML = `<p>${translations[currentLang].selectPlant}</p>`;
-            plantingContent.appendChild(selectPlant);
-            
-            // Добавляем заголовок для выбора грядки
-            const slotTitle = document.createElement('h3');
-            slotTitle.textContent = translations[currentLang].selectSlot;
-            plantingContent.appendChild(slotTitle);
-            
-            // Создаем контейнер для грядок
-            const slotsContainer = document.createElement('div');
-            slotsContainer.className = 'beds-container';
-            slotsContainer.style.marginTop = '10px';
-            
-            // Создаем кнопки для каждой грядки
-            farm.plants.forEach((plant, index) => {
-                const slotBtn = document.createElement('button');
-                slotBtn.className = 'bed-slot';
-                slotBtn.style.cursor = 'pointer';
-                
-                if (plant) {
-                    if (plant.isGrown()) {
-                        slotBtn.classList.add('ready');
-                        slotBtn.innerHTML = `<div>${getPlantEmoji(plant.name)}</div><div>${index + 1}</div>`;
-                    } else if (plant.growing) {
-                        slotBtn.classList.add('growing');
-                        slotBtn.innerHTML = `<div>${getPlantEmoji(plant.name)}</div><div>${index + 1}</div>`;
-                    }
-                } else {
-                    slotBtn.classList.add('empty');
-                    slotBtn.innerHTML = `<div>${index + 1}</div><div>${translations[currentLang].free}</div>`;
-                    slotBtn.onclick = () => {
-                        const plantIndex = parseInt(document.getElementById('plantSelect').value);
-                        if (farm.plantGrowth(index, farm.inventory[plantIndex])) {
-                            closeModal('plantingModal');
-                        }
+            // Иначе генерируем новый магазин
+            gameData.shopItems = {};
+            Object.entries(gameData.plants).forEach(([plantId, plant]) => {
+                if (Math.random() < plant.availabilityChance) {
+                    gameData.shopItems[plantId] = {
+                        quantity: Math.floor(Math.random() * 3) + 1, // 1-3 штуки
+                        plant: plant
                     };
                 }
-                
-                slotsContainer.appendChild(slotBtn);
             });
+        }
+
+        // Таймер магазина
+        function startShopTimer() {
+            // Рассчитываем оставшееся время до обновления магазина
+            const timeLeft = Math.max(0, Math.floor((gameData.nextShopUpdate - Date.now()) / 1000));
+            gameData.shopTimer = timeLeft;
+            updateShopTimerDisplay();
             
-            plantingContent.appendChild(slotsContainer);
-            document.getElementById('plantingModal').style.display = 'flex';
+            const timer = setInterval(() => {
+                gameData.shopTimer--;
+                updateShopTimerDisplay();
+                
+                if (gameData.shopTimer <= 0) {
+                    updateShopItems();
+                    renderShop();
+                    gameData.nextShopUpdate = Date.now() + 300000; // +5 минут
+                    gameData.shopTimer = 300;
+                    showNotification(
+                        gameData.currentLanguage === 'ru' 
+                            ? '🛒 Магазин обновлен!' 
+                            : '🛒 Shop updated!'
+                    );
+                }
+            }, 1000);
         }
         
-        function openSelling() {
-            const sellingContent = document.getElementById('sellingContent');
-            sellingContent.innerHTML = '';
+        function updateShopTimerDisplay() {
+            const mins = Math.floor(gameData.shopTimer / 60);
+            const secs = gameData.shopTimer % 60;
+            elements.shopTimer.textContent = 
+                gameData.currentLanguage === 'ru' 
+                    ? `Магазин обновится через: ${mins}:${secs.toString().padStart(2, '0')}`
+                    : `Shop updates in: ${mins}:${secs.toString().padStart(2, '0')}`;
+        }
+
+        // Переключение языка
+        function switchLanguage(lang) {
+            gameData.currentLanguage = lang;
             
-            if (farm.inventory.length === 0) {
-                sellingContent.innerHTML = `<p>${translations[currentLang].inventoryEmpty}</p>`;
-                document.getElementById('sellingModal').style.display = 'flex';
-                return;
-            }
-            
-            // Создаем выпадающий список растений
-            const selectPlant = document.createElement('select');
-            selectPlant.id = 'sellPlantSelect';
-            selectPlant.className = 'btn';
-            selectPlant.style.width = '100%';
-            selectPlant.style.marginBottom = '20px';
-            
-            farm.inventory.forEach((plant, index) => {
-                if (plant.isGrown()) {
-                    const option = document.createElement('option');
-                    option.value = index;
-                    option.textContent = `${plant.name} (${translations[currentLang].sellFor}: ${plant.getSellPrice()})`;
-                    selectPlant.appendChild(option);
+            elements.langButtons.forEach(btn => {
+                if (btn.dataset.lang === lang) {
+                    btn.classList.add('active');
+                } else {
+                    btn.classList.remove('active');
                 }
             });
             
-            if (selectPlant.options.length === 0) {
-                sellingContent.innerHTML = '<p>Нет растений для продажи. Сначала соберите урожай.</p>';
-            } else {
-                sellingContent.innerHTML = `<p>${translations[currentLang].selectToSell}</p>`;
-                sellingContent.appendChild(selectPlant);
-                
-                const sellButton = document.createElement('button');
-                sellButton.className = 'btn btn-sell';
-                sellButton.textContent = translations[currentLang].sell;
-                sellButton.style.width = '100%';
-                sellButton.onclick = () => {
-                    const plantIndex = parseInt(document.getElementById('sellPlantSelect').value);
-                    farm.sellPlant(plantIndex);
-                };
-                
-                // Кнопка "Продать всё"
-                const sellAllButton = document.createElement('button');
-                sellAllButton.className = 'btn btn-sell';
-                sellAllButton.textContent = translations[currentLang].sellAll;
-                sellAllButton.style.width = '100%';
-                sellAllButton.style.marginTop = '10px';
-                sellAllButton.onclick = () => {
-                    farm.sellAllPlants();
-                };
-                
-                sellingContent.appendChild(sellButton);
-                sellingContent.appendChild(sellAllButton);
-            }
-            
-            document.getElementById('sellingModal').style.display = 'flex';
+            updateUI();
         }
-        
-        function showPlantInfo(index) {
-            const plant = farm.inventory[index];
-            if (!plant) return;
+
+        // Обновление интерфейса
+        function updateUI() {
+            // Обновление текстов
+            elements.subtitle.textContent = 
+                gameData.currentLanguage === 'ru' 
+                    ? 'Выращивай, собирай, продавай!' 
+                    : 'Grow, harvest, sell!';
             
-            document.getElementById('plantInfoTitle').textContent = plant.name;
-            const content = document.getElementById('plantInfoContent');
+            elements.harvestBtnText.textContent = 
+                gameData.currentLanguage === 'ru' 
+                    ? 'Собрать всё' 
+                    : 'Harvest All';
             
-            let infoHTML = '';
-            if (plant.isGrown()) {
-                infoHTML = `
-                    <p>${translations[currentLang].weight}: ${plant.current_weight} кг</p>
-                    <p>${translations[currentLang].fruits}: ${plant.current_fruits}</p>
-                    <p>${translations[currentLang].sellFor}: ${plant.getSellPrice()} ${translations[currentLang].coins}</p>
-                    <p>${translations[currentLang].pricePerKg}: ${plant.price_per_kg}</p>
-                `;
-            } else {
-                infoHTML = `
-                    <p>${translations[currentLang].seed}</p>
-                    <p>${translations[currentLang].seedPrice}: ${plant.seed_price} ${translations[currentLang].coins}</p>
-                    <p>${translations[currentLang].growthTime}: ${plant.grow_time / 1000} сек</p>
-                `;
-            }
+            elements.farmTitle.textContent = 
+                gameData.currentLanguage === 'ru' 
+                    ? 'Ваши грядки' 
+                    : 'Your Farm';
             
-            content.innerHTML = infoHTML;
-            document.getElementById('plantInfoModal').style.display = 'flex';
+            elements.shopTitle.textContent = 
+                gameData.currentLanguage === 'ru' 
+                    ? 'Магазин семян' 
+                    : 'Seed Shop';
+            
+            elements.inventoryTitle.textContent = 
+                gameData.currentLanguage === 'ru' 
+                    ? 'Ваш инвентарь' 
+                    : 'Your Inventory';
+            
+            elements.harvestTitle.textContent = 
+                gameData.currentLanguage === 'ru' 
+                    ? 'Урожай собран!' 
+                    : 'Harvest Complete!';
+            
+            renderFarm();
+            renderShop();
+            renderInventory();
+            updateShopTimerDisplay();
         }
-        
-        function openBedInfo(index) {
-            const plant = farm.plants[index];
-            if (!plant) return;
+
+        // Отображение грядок
+        function renderFarm() {
+            elements.farmGrid.innerHTML = '';
             
-            document.getElementById('plantInfoTitle').textContent = plant.name;
-            const content = document.getElementById('plantInfoContent');
-            
-            let infoHTML = '';
-            if (plant.isGrown()) {
-                infoHTML = `
-                    <p>${translations[currentLang].ready}</p>
-                    <p>${translations[currentLang].fruits}: ${plant.current_fruits}</p>
-                    <p>${translations[currentLang].weight}: ${plant.current_weight} кг</p>
-                    <p>${translations[currentLang].sellFor}: ${plant.getSellPrice()} ${translations[currentLang].coins}</p>
-                `;
-            } else if (plant.growing) {
-                const timeLeft = plant.getTimeLeft();
-                const minutes = Math.floor(timeLeft / 60000);
-                const seconds = Math.floor((timeLeft % 60000) / 1000);
+            gameData.plots.forEach((plot, index) => {
+                const plotElement = document.createElement('div');
+                plotElement.className = 'plot';
                 
-                infoHTML = `
-                    <p>${translations[currentLang].growing}</p>
-                    <p>Осталось времени: ${minutes} мин ${seconds} сек</p>
-                    <div class="progress-bar">
-                        <div class="progress-fill" style="width: ${plant.growthProgress}%"></div>
+                if (!plot.plant) {
+                    plotElement.classList.add('empty');
+                    plotElement.innerHTML = `
+                        <div class="plot-content">
+                            <i class="fas fa-plus-circle plant-icon"></i>
+                            <div>${gameData.currentLanguage === 'ru' ? 'Пусто' : 'Empty'}</div>
+                        </div>
+                    `;
+                    plotElement.addEventListener('click', () => openPlantingDialog(index));
+                } else {
+                    const plant = gameData.plants[plot.plant];
+                    const isReady = plot.progress >= plant.growthTime;
+                    
+                    if (isReady) {
+                        plotElement.classList.add('ready');
+                    } else {
+                        plotElement.classList.add('growing');
+                    }
+                    
+                    const progressPercent = Math.min(100, (plot.progress / plant.growthTime) * 100);
+                    const timeLeft = Math.max(0, plant.growthTime - plot.progress);
+                    
+                    plotElement.innerHTML = `
+                        <div class="plot-content">
+                            <div class="plant-icon">${plant.icon}</div>
+                            <div class="plant-name">${plant.name[gameData.currentLanguage]}</div>
+                            ${!isReady ? `
+                                <div class="progress-container">
+                                    <div class="progress-bar" style="width: ${progressPercent}%"></div>
+                                </div>
+                                <div class="time-remaining">
+                                    ${formatTime(timeLeft)}
+                                </div>
+                            ` : `
+                                <div style="font-weight: 700; color: var(--success);">${gameData.currentLanguage === 'ru' ? 'Готово!' : 'Ready!'}</div>
+                            `}
+                        </div>
+                    `;
+                    
+                    if (isReady) {
+                        plotElement.addEventListener('click', () => harvestPlant(index));
+                    }
+                }
+                
+                elements.farmGrid.appendChild(plotElement);
+            });
+        }
+
+        // Отображение магазина
+        function renderShop() {
+            elements.shopItems.innerHTML = '';
+            
+            Object.entries(gameData.shopItems).forEach(([plantId, shopItem]) => {
+                const plant = shopItem.plant;
+                const quantity = shopItem.quantity;
+                
+                const shopItemElement = document.createElement('div');
+                shopItemElement.className = 'shop-item';
+                
+                shopItemElement.innerHTML = `
+                    <div class="shop-item-header">
+                        <div class="shop-item-icon">${plant.icon}</div>
+                        <div class="shop-item-name">${plant.name[gameData.currentLanguage]}</div>
+                    </div>
+                    <div class="availability">${quantity} ${gameData.currentLanguage === 'ru' ? 'шт' : 'pcs'}</div>
+                    <div class="shop-item-price">
+                        <i class="fas fa-coins" style="color: var(--secondary);"></i>
+                        ${plant.seedPrice} ${gameData.currentLanguage === 'ru' ? 'монет' : 'coins'}
+                    </div>
+                    <div class="shop-item-stats">
+                        <div>${gameData.currentLanguage === 'ru' ? 'Время роста:' : 'Growth time:'}</div>
+                        <div>${formatTime(plant.growthTime)}</div>
+                        <div>${gameData.currentLanguage === 'ru' ? 'Цена за кг:' : 'Price per kg:'}</div>
+                        <div>${plant.pricePerKg}</div>
+                        <div>${gameData.currentLanguage === 'ru' ? 'Плодов:' : 'Fruits:'}</div>
+                        <div>${plant.fruitCount}</div>
+                    </div>
+                    <button class="btn btn-primary buy-btn" data-plant="${plantId}">
+                        <i class="fas fa-shopping-cart"></i>
+                        ${gameData.currentLanguage === 'ru' ? 'Купить' : 'Buy'}
+                    </button>
+                `;
+                
+                elements.shopItems.appendChild(shopItemElement);
+            });
+            
+            // Добавляем обработчики покупки
+            document.querySelectorAll('.buy-btn').forEach(btn => {
+                btn.addEventListener('click', () => buySeeds(btn.dataset.plant));
+            });
+            
+            // Если магазин пуст
+            if (Object.keys(gameData.shopItems).length === 0) {
+                elements.shopItems.innerHTML = `
+                    <div style="grid-column: 1 / -1; text-align: center; padding: 30px 0; color: var(--text-secondary);">
+                        <i class="fas fa-store-slash" style="font-size: 3rem; margin-bottom: 15px;"></i>
+                        <h3>${gameData.currentLanguage === 'ru' ? 'Магазин пуст' : 'Shop is empty'}</h3>
+                        <p>${gameData.currentLanguage === 'ru' ? 'Ждите обновления магазина' : 'Waiting for shop update'}</p>
                     </div>
                 `;
             }
-            
-            content.innerHTML = infoHTML;
-            document.getElementById('plantInfoModal').style.display = 'flex';
         }
-        
-        function closeModal(modalId) {
-            document.getElementById(modalId).style.display = 'none';
-        }
-        
-        function buySeed(plantIndex) {
-            farm.buySeed(plantIndex, 1);
-        }
-        
-        function collectAll() {
-            farm.collectPlants();
-        }
-        
-        function setLanguage(lang) {
-            currentLang = lang;
-            applyTranslations();
-            updateUI();
-        }
-        
-        function applyTranslations() {
-            const trans = translations[currentLang];
+
+        // Отображение инвентаря
+        function renderInventory() {
+            elements.inventoryGrid.innerHTML = '';
             
-            // Обновляем тексты кнопок и заголовков
-            document.querySelector('.btn-shop').textContent = trans.shop;
-            document.querySelector('.btn-inventory').textContent = trans.inventory;
-            document.querySelector('.btn-collect').textContent = trans.collect;
-            document.querySelector('.btn-plant').textContent = trans.plant;
-            document.querySelector('.btn-sell').textContent = trans.sell;
+            // Семена
+            Object.entries(gameData.inventory.seeds).forEach(([plantId, quantity]) => {
+                if (quantity > 0) {
+                    const plant = gameData.plants[plantId];
+                    const inventoryItem = document.createElement('div');
+                    inventoryItem.className = 'inventory-item';
+                    
+                    inventoryItem.innerHTML = `
+                        <div class="inventory-item-icon">${plant.icon}</div>
+                        <div class="inventory-item-name">${plant.name[gameData.currentLanguage]}</div>
+                        <div class="inventory-item-quantity">${quantity}</div>
+                        <div class="inventory-actions">
+                            <button class="btn btn-primary action-btn" data-action="plant" data-plant="${plantId}">
+                                ${gameData.currentLanguage === 'ru' ? 'Сажать' : 'Plant'}
+                            </button>
+                        </div>
+                    `;
+                    
+                    elements.inventoryGrid.appendChild(inventoryItem);
+                }
+            });
             
-            document.querySelectorAll('.section-title')[0].textContent = trans.mainMenu;
+            // Растения
+            Object.entries(gameData.inventory.plants).forEach(([plantId, items]) => {
+                if (items.length > 0) {
+                    const plant = gameData.plants[plantId];
+                    const totalQuantity = items.length;
+                    
+                    const inventoryItem = document.createElement('div');
+                    inventoryItem.className = 'inventory-item';
+                    
+                    // Формируем список плодов
+                    let fruitsHTML = '';
+                    items.forEach((fruit, index) => {
+                        const value = (fruit * plant.pricePerKg).toFixed(1);
+                        fruitsHTML += `
+                            <div class="fruit-item">
+                                <span>${gameData.currentLanguage === 'ru' ? 'Плод' : 'Fruit'} ${index+1}:</span>
+                                <span class="fruit-weight">${fruit} кг</span>
+                                <span>(${value} <i class="fas fa-coins" style="color: var(--secondary);"></i>)</span>
+                            </div>
+                        `;
+                    });
+                    
+                    inventoryItem.innerHTML = `
+                        <div class="inventory-item-icon">${plant.icon}</div>
+                        <div class="inventory-item-name">${plant.name[gameData.currentLanguage]}</div>
+                        <div class="inventory-item-quantity">${totalQuantity}</div>
+                        <div class="inventory-fruits">
+                            ${fruitsHTML}
+                        </div>
+                        <div class="inventory-actions">
+                            <button class="btn btn-primary action-btn" data-action="sell-one" data-plant="${plantId}">
+                                ${gameData.currentLanguage === 'ru' ? 'Продать 1' : 'Sell 1'}
+                            </button>
+                            <button class="btn btn-secondary action-btn" data-action="sell-all" data-plant="${plantId}">
+                                ${gameData.currentLanguage === 'ru' ? 'Все' : 'All'}
+                            </button>
+                        </div>
+                    `;
+                    
+                    elements.inventoryGrid.appendChild(inventoryItem);
+                }
+            });
             
-            document.getElementById('shopModal').querySelector('.modal-title').textContent = trans.seedShop;
-            document.getElementById('inventoryModal').querySelector('.modal-title').textContent = trans.yourInventory;
-            document.getElementById('plantingModal').querySelector('.modal-title').textContent = trans.planting;
-            document.getElementById('sellingModal').querySelector('.modal-title').textContent = trans.selling;
-            
-            // Обновляем текст в окне посадки
-            const plantingContent = document.querySelector('#plantingModal p');
-            if (plantingContent) {
-                plantingContent.textContent = trans.selectPlant;
+            // Если инвентарь пуст
+            if (elements.inventoryGrid.children.length === 0) {
+                elements.inventoryGrid.innerHTML = `
+                    <div style="grid-column: 1 / -1; text-align: center; padding: 30px 0; color: var(--text-secondary);">
+                        <i class="fas fa-box-open" style="font-size: 3rem; margin-bottom: 15px;"></i>
+                        <h3>${gameData.currentLanguage === 'ru' ? 'Инвентарь пуст' : 'Inventory is empty'}</h3>
+                        <p>${gameData.currentLanguage === 'ru' ? 'Купите семена в магазине' : 'Buy seeds in the shop'}</p>
+                    </div>
+                `;
+            } else {
+                // Добавляем обработчики действий
+                document.querySelectorAll('.action-btn').forEach(btn => {
+                    btn.addEventListener('click', () => {
+                        const action = btn.dataset.action;
+                        const plantId = btn.dataset.plant;
+                        
+                        if (action === 'plant') {
+                            openPlantingDialogWithPlant(plantId);
+                        } else if (action === 'sell-one') {
+                            sellPlant(plantId, 1);
+                        } else if (action === 'sell-all') {
+                            sellPlant(plantId, 'all');
+                        }
+                    });
+                });
+            }
+        }
+
+        // Покупка семян
+        function buySeeds(plantId) {
+            const shopItem = gameData.shopItems[plantId];
+            if (!shopItem || shopItem.quantity <= 0) {
+                showNotification(
+                    gameData.currentLanguage === 'ru' 
+                        ? 'Эти семена закончились!' 
+                        : 'These seeds are sold out!',
+                    'error'
+                );
+                return;
             }
             
-            // Обновляем текст в окне продажи
-            const sellingContent = document.querySelector('#sellingModal p');
-            if (sellingContent) {
-                sellingContent.textContent = trans.selectToSell;
+            const plant = shopItem.plant;
+            
+            if (gameData.balance >= plant.seedPrice) {
+                gameData.balance -= plant.seedPrice;
+                
+                // Уменьшаем количество в магазине
+                shopItem.quantity--;
+                
+                // Добавляем в инвентарь
+                if (!gameData.inventory.seeds[plantId]) {
+                    gameData.inventory.seeds[plantId] = 0;
+                }
+                
+                gameData.inventory.seeds[plantId]++;
+                updateBalance();
+                renderShop();
+                renderInventory();
+                showNotification(
+                    gameData.currentLanguage === 'ru' 
+                        ? `Куплены семена: ${plant.name.ru}` 
+                        : `Bought seeds: ${plant.name.en}`
+                );
+                
+                // Анимация
+                createCollectAnimation('💰', 'var(--secondary)');
+            } else {
+                showNotification(
+                    gameData.currentLanguage === 'ru' 
+                        ? 'Недостаточно монет!' 
+                        : 'Not enough coins!',
+                    'error'
+                );
+            }
+        }
+
+        // Открытие диалога посадки
+        function openPlantingDialog(plotIndex) {
+            // Если у игрока есть семена, открыть выбор семян
+            if (Object.values(gameData.inventory.seeds).some(qty => qty > 0)) {
+                toggleModal(elements.inventoryModal);
+            } else {
+                showNotification(
+                    gameData.currentLanguage === 'ru' 
+                        ? 'Купите семена в магазине!' 
+                        : 'Buy seeds in the shop!',
+                    'error'
+                );
+            }
+        }
+
+        // Открытие диалога посадки с определенным растением
+        function openPlantingDialogWithPlant(plantId) {
+            toggleModal(elements.inventoryModal);
+            
+            // Найти свободную грядку
+            const freePlotIndex = gameData.plots.findIndex(plot => !plot.plant);
+            
+            if (freePlotIndex !== -1) {
+                plantSeed(freePlotIndex, plantId);
+            } else {
+                showNotification(
+                    gameData.currentLanguage === 'ru' 
+                        ? 'Нет свободных грядок!' 
+                        : 'No free plots!',
+                    'error'
+                );
+            }
+        }
+
+        // Посадка семян
+        function plantSeed(plotIndex, plantId) {
+            if (gameData.inventory.seeds[plantId] > 0) {
+                gameData.inventory.seeds[plantId]--;
+                
+                gameData.plots[plotIndex] = {
+                    plant: plantId,
+                    progress: 0,
+                    fruits: []
+                };
+                
+                renderFarm();
+                renderInventory();
+                showNotification(
+                    gameData.currentLanguage === 'ru' 
+                        ? `Посажено: ${gameData.plants[plantId].name.ru}` 
+                        : `Planted: ${gameData.plants[plantId].name.en}`
+                );
+                
+                // Анимация
+                createCollectAnimation('🌱', 'var(--primary)');
+            }
+        }
+
+        // Сбор урожая с одной грядки
+        function harvestPlant(plotIndex) {
+            const plot = gameData.plots[plotIndex];
+            const plant = gameData.plants[plot.plant];
+            
+            // Генерируем плоды
+            const fruits = [];
+            for (let i = 0; i < plant.fruitCount; i++) {
+                const weight = (Math.random() * (plant.maxWeight - plant.minWeight) + plant.minWeight).toFixed(2);
+                fruits.push(weight);
             }
             
-            // Обновляем заголовок
-            headerTitle.textContent = trans.title;
-            headerSubtitle.textContent = trans.subtitle;
+            // Добавляем в инвентарь
+            if (!gameData.inventory.plants[plot.plant]) {
+                gameData.inventory.plants[plot.plant] = [];
+            }
+            
+            gameData.inventory.plants[plot.plant] = gameData.inventory.plants[plot.plant].concat(fruits);
+            
+            // Показываем информацию о собранном урожае
+            let message = gameData.currentLanguage === 'ru' 
+                ? `Собрано: ${plant.name.ru}<br>`
+                : `Harvested: ${plant.name.en}<br>`;
+            
+            fruits.forEach((weight, i) => {
+                message += `🍎 ${gameData.currentLanguage === 'ru' ? 'Плод' : 'Fruit'} ${i+1}: ${weight} кг<br>`;
+            });
+            
+            showNotification(message);
+            
+            // Обработка растения после сбора
+            if (plant.repeatGrowth) {
+                // Для многолетних растений - сброс прогресса
+                gameData.plots[plotIndex].progress = 0;
+                gameData.plots[plotIndex].fruits = [];
+            } else {
+                // Для однолетних - освобождаем грядку
+                gameData.plots[plotIndex] = { plant: null, progress: 0, fruits: [] };
+            }
+            
+            renderFarm();
+            renderInventory();
+            
+            // Анимация
+            createCollectAnimation(plant.icon, '#FF9800');
+        }
+
+        // Сбор всего урожая
+        function harvestAll() {
+            let harvested = false;
+            const harvestSummary = {};
+            
+            gameData.plots.forEach((plot, index) => {
+                if (plot.plant && plot.progress >= gameData.plants[plot.plant].growthTime) {
+                    const plant = gameData.plants[plot.plant];
+                    
+                    // Генерируем плоды
+                    const fruits = [];
+                    for (let i = 0; i < plant.fruitCount; i++) {
+                        const weight = (Math.random() * (plant.maxWeight - plant.minWeight) + plant.minWeight).toFixed(2);
+                        fruits.push(weight);
+                    }
+                    
+                    // Добавляем в сводку
+                    if (!harvestSummary[plot.plant]) {
+                        harvestSummary[plot.plant] = {
+                            name: plant.name[gameData.currentLanguage],
+                            icon: plant.icon,
+                            count: plant.fruitCount,
+                            fruits: []
+                        };
+                    }
+                    harvestSummary[plot.plant].fruits = harvestSummary[plot.plant].fruits.concat(fruits);
+                    
+                    // Добавляем в инвентарь
+                    if (!gameData.inventory.plants[plot.plant]) {
+                        gameData.inventory.plants[plot.plant] = [];
+                    }
+                    gameData.inventory.plants[plot.plant] = gameData.inventory.plants[plot.plant].concat(fruits);
+                    
+                    // Обработка растения после сбора
+                    if (plant.repeatGrowth) {
+                        gameData.plots[index].progress = 0;
+                        gameData.plots[index].fruits = [];
+                    } else {
+                        gameData.plots[index] = { plant: null, progress: 0, fruits: [] };
+                    }
+                    
+                    harvested = true;
+                    
+                    // Анимация
+                    createCollectAnimation(plant.icon, '#FF9800');
+                }
+            });
+            
+            if (harvested) {
+                renderFarm();
+                renderInventory();
+                showHarvestSummary(harvestSummary);
+            } else {
+                showNotification(
+                    gameData.currentLanguage === 'ru' 
+                        ? 'Нет готовых к сбору растений!' 
+                        : 'No plants ready for harvest!',
+                    'warning'
+                );
+            }
         }
         
-        function showNotification(message) {
+        // Показать сводку по собранному урожаю
+        function showHarvestSummary(summary) {
+            let html = `
+                <div class="harvest-title">
+                    <i class="fas fa-basket-shopping"></i>
+                    ${gameData.currentLanguage === 'ru' ? 'Вы собрали:' : 'You harvested:'}
+                </div>
+            `;
+            
+            Object.values(summary).forEach(item => {
+                html += `
+                    <div class="harvest-item">
+                        <div><span style="font-size: 1.2em;">${item.icon}</span> ${item.name}</div>
+                        <div>${item.fruits.length} ${gameData.currentLanguage === 'ru' ? 'плодов' : 'fruits'}</div>
+                    </div>
+                `;
+            });
+            
+            elements.harvestSummary.innerHTML = html;
+            toggleModal(elements.harvestModal);
+        }
+
+        // Продажа растений
+        function sellPlant(plantId, amount) {
+            const plants = gameData.inventory.plants[plantId];
+            if (!plants || plants.length === 0) return;
+            
+            const plant = gameData.plants[plantId];
+            let totalIncome = 0;
+            let itemsSold = 0;
+            
+            if (amount === 'all') {
+                // Продаем все
+                plants.forEach(weight => {
+                    totalIncome += weight * plant.pricePerKg;
+                });
+                itemsSold = plants.length;
+                gameData.inventory.plants[plantId] = [];
+            } else {
+                // Продаем указанное количество
+                const toSell = Math.min(amount, plants.length);
+                for (let i = 0; i < toSell; i++) {
+                    totalIncome += plants[i] * plant.pricePerKg;
+                    itemsSold++;
+                }
+                gameData.inventory.plants[plantId] = plants.slice(itemsSold);
+            }
+            
+            totalIncome = Math.round(totalIncome);
+            gameData.balance += totalIncome;
+            
+            updateBalance();
+            renderInventory();
+            showNotification(
+                gameData.currentLanguage === 'ru' 
+                    ? `Продано ${itemsSold} ${plant.name.ru} за ${totalIncome} монет` 
+                    : `Sold ${itemsSold} ${plant.name.en} for ${totalIncome} coins`
+            );
+            
+            // Анимация
+            createCollectAnimation('💰', 'var(--secondary)');
+        }
+
+        // Обновление баланса
+        function updateBalance() {
+            elements.balance.textContent = gameData.balance;
+        }
+
+        // Форматирование времени
+        function formatTime(seconds) {
+            const mins = Math.floor(seconds / 60);
+            const secs = seconds % 60;
+            return `${mins}:${secs.toString().padStart(2, '0')}`;
+        }
+
+        // Показ уведомления
+        function showNotification(message, type = 'success') {
             const notification = document.createElement('div');
-            notification.className = 'notification';
-            notification.textContent = message;
+            notification.className = `notification ${type}`;
+            notification.innerHTML = message;
             document.body.appendChild(notification);
             
             setTimeout(() => {
                 notification.remove();
             }, 3000);
         }
-        
-        function setWelcomeLang(lang) {
-            if (lang === 'ru') {
-                document.getElementById('welcomeTextRu').style.display = 'block';
-                document.getElementById('welcomeTextEn').style.display = 'none';
-                document.getElementById('welcomeTitle').textContent = 'Добро пожаловать в GaGBot!';
-                document.querySelector('#welcomeModal button:last-child').textContent = 'Начать игру';
-            } else {
-                document.getElementById('welcomeTextRu').style.display = 'none';
-                document.getElementById('welcomeTextEn').style.display = 'block';
-                document.getElementById('welcomeTitle').textContent = 'Welcome to GaGBot!';
-                document.querySelector('#welcomeModal button:last-child').textContent = 'Start Game';
-            }
+
+        // Переключение модального окна
+        function toggleModal(modal) {
+            modal.classList.toggle('active');
         }
-        
-        // Таймер обновления магазина
-        function updateShopTimer() {
-            if (shopRefreshTime > 0) {
-                shopRefreshTime--;
-                const minutes = Math.floor(shopRefreshTime / 60);
-                const seconds = shopRefreshTime % 60;
-                
-                const timerElement = document.getElementById('shopTimer');
-                if (timerElement) {
-                    timerElement.innerHTML = `${translations[currentLang].refreshIn} ${minutes}:${seconds < 10 ? '0' + seconds : seconds}`;
-                }
-                
-                setTimeout(updateShopTimer, 1000);
-            } else {
-                farm.updateShop();
-                if (document.getElementById('shopModal').style.display === 'flex') {
-                    openShop();
-                }
-            }
+
+        // Создание анимации сбора
+        function createCollectAnimation(icon, color) {
+            const anim = document.createElement('div');
+            anim.className = 'collect-animation';
+            anim.innerHTML = icon;
+            anim.style.color = color;
+            anim.style.position = 'fixed';
+            anim.style.left = `${Math.random() * 80 + 10}%`;
+            anim.style.top = '80%';
+            anim.style.fontSize = '2.5rem';
+            anim.style.zIndex = '1000';
+            document.body.appendChild(anim);
+            
+            setTimeout(() => {
+                anim.remove();
+            }, 1000);
         }
-        
-        // Инициализация игры
-        window.onload = function() {
-            updateUI();
-            applyTranslations();
-            updateShopTimer();
-            
-            // Проверяем, есть ли сохраненная игра
-            if (!localStorage.getItem('farmGame')) {
-                // Показываем приветственное окно
-                document.getElementById('welcomeModal').style.display = 'flex';
-                setWelcomeLang('ru');
-            }
-            
-            // Автосохранение каждые 10 секунд
+
+        // Игровой цикл
+        function startGameLoop() {
             setInterval(() => {
-                farm.saveGame();
-            }, 10000);
-        };
+                // Обновляем прогресс роста растений
+                gameData.plots.forEach(plot => {
+                    if (plot.plant && plot.progress < gameData.plants[plot.plant].growthTime) {
+                        plot.progress += 1;
+                    }
+                });
+                
+                renderFarm();
+                
+                // Автосохранение каждые 10 секунд
+                if (Date.now() - gameData.lastSave > 10000) {
+                    saveGame();
+                    gameData.lastSave = Date.now();
+                }
+            }, 1000);
+        }
+
+        // Сохранение игры
+        function saveGame() {
+            // Сохраняем состояние магазина и время следующего обновления
+            gameData.nextShopUpdate = Date.now() + gameData.shopTimer * 1000;
+            localStorage.setItem('gagbot_save', JSON.stringify(gameData));
+        }
+
+        // Загрузка игры
+        function loadGame() {
+            const save = localStorage.getItem('gagbot_save');
+            if (save) {
+                const parsed = JSON.parse(save);
+                Object.assign(gameData, parsed);
+                
+                // Рассчитываем оставшееся время для таймера магазина
+                if (gameData.nextShopUpdate) {
+                    const timeLeft = Math.max(0, Math.floor((gameData.nextShopUpdate - Date.now()) / 1000));
+                    gameData.shopTimer = timeLeft;
+                }
+                
+                updateBalance();
+            }
+        }
+
+        // Запуск игры при загрузке страницы
+        window.addEventListener('DOMContentLoaded', initGame);
     </script>
 </body>
 </html>
